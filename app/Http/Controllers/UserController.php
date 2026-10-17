@@ -12,7 +12,6 @@ class UserController extends Controller
     public function index()
     {
         $users = User::latest()->get();
-
         return view('users.dashboard', compact('users'));
     }
 
@@ -30,18 +29,19 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => 'required',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:6',
         ]);
 
         User::create([
             'name' => $request->name,
-            'email' => $request ->email,
+            'email' => $request->email,
             'password' => $request->password,
         ]);
 
-        return redirect()->route('user.index')->with('success', 'User baru berhasil ditambahkan!');
+
+        return redirect()->route('users.index')->with('success', 'Berhasil disimpan!');
     }
 
     /**

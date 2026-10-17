@@ -10,9 +10,9 @@
     <div class="max-w-md mx-auto bg-white p-6 rounded-xl shadow-md">
         <h1 class="text-2xl font-bold text-slate-800 mb-6">Tambah User Baru</h1>
 
-        <!-- Form mengarah ke route user.store dengan method POST -->
-        <form action="{{ route('user.store') }}" method="POST" class="space-y-4">
-            <!-- WAJIB: Token Keamanan Laravel CSRF -->
+        <!-- Form mengarah ke route users.store dengan method POST -->
+        <form action="{{ route('users.store') }}" method="POST" class="space-y-4">
+            <!-- WAJIB: Token Keamanan CSRF -->
             @csrf
 
             <!-- Input Nama -->
@@ -50,7 +50,7 @@
                 <button type="submit" class="bg-blue-600 text-white px-5 py-2.5 rounded-lg hover:bg-blue-700 font-medium">
                     Simpan
                 </button>
-                <a href="{{ route('user.index') }}" class="bg-slate-200 text-slate-700 px-5 py-2.5 rounded-lg hover:bg-slate-300 font-medium">
+                <a href="{{ route('users.index') }}" class="bg-slate-200 text-slate-700 px-5 py-2.5 rounded-lg hover:bg-slate-300 font-medium">
                     Batal
                 </a>
             </div>
