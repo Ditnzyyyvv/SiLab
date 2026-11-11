@@ -41,3 +41,4 @@ class LabRequest extends FormRequest
         ];
     }
 }
+

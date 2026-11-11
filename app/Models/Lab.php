@@ -39,3 +39,4 @@ class Lab extends Model
         return $this->hasMany(Aset::class, 'lab_id');
     }
 }
+

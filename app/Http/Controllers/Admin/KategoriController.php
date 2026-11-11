@@ -81,3 +81,4 @@ class KategoriController extends Controller
             ->with('success', 'Kategori aset berhasil dihapus.');
     }
 }
+

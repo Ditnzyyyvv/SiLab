@@ -48,5 +48,8 @@ class DatabaseSeeder extends Seeder
 
         // Seed Master Data: Labs, Kategoris, Asets (Fase 2)
         $this->call(MasterDataSeeder::class);
+
+        // Seed Tiket Data (Fase 3)
+        $this->call(TiketSeeder::class);
     }
 }

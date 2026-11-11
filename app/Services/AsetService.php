@@ -89,3 +89,4 @@ class AsetService
             ->generate($aset->lapor_qr_url);
     }
 }
+

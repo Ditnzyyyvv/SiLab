@@ -26,3 +26,4 @@ class Kategori extends Model
         return $this->hasMany(Aset::class, 'kategori_id');
     }
 }
+

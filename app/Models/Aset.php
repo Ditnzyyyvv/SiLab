@@ -6,6 +6,7 @@ use Database\Factories\AsetFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Aset extends Model
@@ -51,6 +52,14 @@ class Aset extends Model
     }
 
     /**
+     * Riwayat tiket pengaduan kerusakan pada aset ini.
+     */
+    public function tikets(): HasMany
+    {
+        return $this->hasMany(Tiket::class, 'aset_id')->latest();
+    }
+
+    /**
      * URL foto aset di storage.
      */
     public function getFotoUrlAttribute(): ?string
@@ -66,3 +75,4 @@ class Aset extends Model
         return url('/lapor/' . $this->kode_aset);
     }
 }
+

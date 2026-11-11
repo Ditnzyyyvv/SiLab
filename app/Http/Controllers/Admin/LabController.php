@@ -95,3 +95,4 @@ class LabController extends Controller
             ->with('success', 'Laboratorium berhasil dihapus.');
     }
 }
+

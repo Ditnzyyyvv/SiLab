@@ -7,6 +7,7 @@ use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -53,5 +54,15 @@ class User extends Authenticatable
     public function isMember(): bool
     {
         return $this->role === 'member';
+    }
+
+    public function tiketsSebagaiPelapor(): HasMany
+    {
+        return $this->hasMany(Tiket::class, 'pelapor_id');
+    }
+
+    public function tiketsSebagaiTeknisi(): HasMany
+    {
+        return $this->hasMany(Tiket::class, 'teknisi_id');
     }
 }

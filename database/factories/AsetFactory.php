@@ -26,3 +26,4 @@ class AsetFactory extends Factory
         ];
     }
 }
+

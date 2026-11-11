@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Aset;
 use App\Models\Kategori;
 use App\Models\Lab;
+use App\Models\Tiket;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
 
@@ -58,11 +60,30 @@ class DashboardController extends Controller
     }
 
     /**
-     * Member Dashboard view.
+     * Member Dashboard view (FR-27).
      */
     public function member(): View
     {
-        return view('member.dashboard');
+        $userId = Auth::id();
+
+        $pendingCount = Tiket::where('pelapor_id', $userId)->where('status', 'Pending')->count();
+        $diprosesCount = Tiket::where('pelapor_id', $userId)->whereIn('status', ['Diproses', 'Menunggu Komponen/Sparepart'])->count();
+        $selesaiCount = Tiket::where('pelapor_id', $userId)->where('status', 'Selesai')->count();
+        $totalTiketSaya = Tiket::where('pelapor_id', $userId)->count();
+
+        $recentTikets = Tiket::with('aset.lab')
+            ->where('pelapor_id', $userId)
+            ->latest()
+            ->take(5)
+            ->get();
+
+        return view('member.dashboard', compact(
+            'pendingCount',
+            'diprosesCount',
+            'selesaiCount',
+            'totalTiketSaya',
+            'recentTikets'
+        ));
     }
 }
 

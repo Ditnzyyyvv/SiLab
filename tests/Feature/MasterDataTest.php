@@ -190,3 +190,4 @@ class MasterDataTest extends TestCase
             ->assertSee('AST-MM-0001');
     }
 }
+

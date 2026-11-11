@@ -164,3 +164,4 @@ class AsetController extends Controller
         return view('admin.asets.print-all-qr', compact('asets', 'qrSvgs'));
     }
 }
+

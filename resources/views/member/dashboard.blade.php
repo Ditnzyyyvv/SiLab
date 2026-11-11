@@ -31,7 +31,7 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Tiket Pending</p>
-                        <p class="text-2xl font-bold text-slate-900 mt-1">0</p>
+                        <p class="text-2xl font-bold text-slate-900 mt-1">{{ $pendingCount }}</p>
                     </div>
                     <div class="w-12 h-12 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center">
                         <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -49,7 +49,7 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Sedang Ditangani</p>
-                        <p class="text-2xl font-bold text-slate-900 mt-1">0</p>
+                        <p class="text-2xl font-bold text-blue-600 mt-1">{{ $diprosesCount }}</p>
                     </div>
                     <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
                         <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -67,7 +67,89 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Tiket Selesai</p>
-                        <p class="text-2xl font-bold text-slate-900 mt-1">0</p>
+                        <p class="text-2xl font-bold text-emerald-600 mt-1">{{ $selesaiCount }}</p>
+                    </div>
+                    <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                </div>
+                <div class="mt-3 text-xs text-slate-500">
+                    Perbaikan telah selesai & dikonfirmasi
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Tickets Table for Member -->
+        <div class="bg-white rounded-xl border border-slate-200 shadow-xs overflow-hidden">
+            <div class="p-5 border-b border-slate-100 flex items-center justify-between">
+                <div>
+                    <h3 class="text-sm font-bold text-slate-900">Laporan Kerusakan Terbaru Saya</h3>
+                    <p class="text-xs text-slate-500">Pantau progres penanganan tiket yang baru saja Anda ajukan</p>
+                </div>
+                <div class="space-x-2">
+                    <a href="{{ route('member.tikets.create') }}" class="inline-flex items-center px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-lg shadow-xs">
+                        + Buat Tiket Baru
+                    </a>
+                    <a href="{{ route('member.tikets.index') }}" class="text-xs font-semibold text-emerald-600 hover:text-emerald-800">
+                        Semua Tiket Saya →
+                    </a>
+                </div>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm text-slate-700">
+                    <thead class="bg-slate-50 border-b border-slate-100 text-xs uppercase font-semibold text-slate-500">
+                        <tr>
+                            <th class="px-5 py-3">Nomor Tiket</th>
+                            <th class="px-5 py-3">Perangkat</th>
+                            <th class="px-5 py-3">Keluhan</th>
+                            <th class="px-5 py-3">Status</th>
+                            <th class="px-5 py-3 text-right">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                        @forelse($recentTikets as $item)
+                            <tr class="hover:bg-slate-50/70 transition-colors">
+                                <td class="px-5 py-3 font-mono font-bold text-emerald-700">
+                                    <a href="{{ route('member.tikets.show', $item) }}" class="hover:underline">
+                                        {{ $item->nomor_tiket }}
+                                    </a>
+                                </td>
+                                <td class="px-5 py-3">
+                                    <div class="font-medium text-slate-900">{{ $item->aset->nama }}</div>
+                                    <div class="text-xs text-slate-400">{{ $item->aset->lab->nama }}</div>
+                                </td>
+                                <td class="px-5 py-3 font-medium text-slate-800 max-w-xs truncate">
+                                    {{ $item->judul }}
+                                </td>
+                                <td class="px-5 py-3">
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold
+                                        @if($item->status === 'Pending') bg-gray-100 text-gray-700
+                                        @elseif($item->status === 'Diproses') bg-blue-100 text-blue-800
+                                        @elseif($item->status === 'Menunggu Komponen/Sparepart') bg-yellow-100 text-yellow-800
+                                        @elseif($item->status === 'Selesai') bg-emerald-100 text-emerald-800
+                                        @else bg-rose-100 text-rose-800 @endif">
+                                        {{ $item->status }}
+                                    </span>
+                                </td>
+                                <td class="px-5 py-3 text-right">
+                                    <a href="{{ route('member.tikets.show', $item) }}" class="text-xs font-semibold text-emerald-600 hover:underline">
+                                        Timeline →
+                                    </a>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="5" class="px-5 py-8 text-center text-slate-400 text-xs">
+                                    Belum ada tiket yang pernah Anda laporkan.
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
                     </div>
                     <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
                         <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">

@@ -16,3 +16,4 @@ class KategoriFactory extends Factory
         ];
     }
 }
+

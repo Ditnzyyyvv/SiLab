@@ -26,3 +26,4 @@ class KategoriRequest extends FormRequest
         ];
     }
 }
+
