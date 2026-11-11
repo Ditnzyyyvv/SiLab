@@ -45,5 +45,8 @@ class DatabaseSeeder extends Seeder
                 'no_hp' => '081234567892',
             ]
         );
+
+        // Seed Master Data: Labs, Kategoris, Asets (Fase 2)
+        $this->call(MasterDataSeeder::class);
     }
 }

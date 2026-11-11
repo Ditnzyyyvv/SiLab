@@ -74,3 +74,4 @@ class RoleAccessTest extends TestCase
         $this->actingAs($member)->get('/teknisi/dashboard')->assertForbidden();
     }
 }
+

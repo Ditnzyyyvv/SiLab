@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Aset;
+use App\Models\Kategori;
+use App\Models\Lab;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -26,7 +29,24 @@ class DashboardController extends Controller
      */
     public function admin(): View
     {
-        return view('admin.dashboard');
+        $totalAset = Aset::count();
+        $asetBaik = Aset::where('kondisi', 'Baik')->count();
+        $asetRusak = Aset::whereIn('kondisi', ['Rusak Ringan', 'Rusak Berat'])->count();
+        $asetPerbaikan = Aset::where('kondisi', 'Dalam Perbaikan')->count();
+        $totalLab = Lab::count();
+        $totalKategori = Kategori::count();
+
+        $recentAsets = Aset::with(['lab', 'kategori'])->latest()->take(5)->get();
+
+        return view('admin.dashboard', compact(
+            'totalAset',
+            'asetBaik',
+            'asetRusak',
+            'asetPerbaikan',
+            'totalLab',
+            'totalKategori',
+            'recentAsets'
+        ));
     }
 
     /**
@@ -45,3 +65,4 @@ class DashboardController extends Controller
         return view('member.dashboard');
     }
 }
+

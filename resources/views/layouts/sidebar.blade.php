@@ -82,26 +82,23 @@
 
                 <div class="px-3 pt-4 pb-1 text-[11px] font-bold uppercase tracking-wider text-slate-400">Master Data</div>
                 <div class="space-y-1 text-slate-300">
-                    <a href="#" class="flex items-center px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 transition-colors">
-                        <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <a href="{{ route('admin.labs.index') }}" class="flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('admin.labs.*') ? 'bg-indigo-600/90 text-white' : 'text-slate-300 hover:text-white hover:bg-slate-800' }}">
+                        <svg class="h-5 w-5 mr-3 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                         </svg>
                         Data Laboratorium
-                        <span class="ml-auto text-[10px] bg-slate-800 px-1.5 py-0.5 rounded text-slate-400">Fase 2</span>
                     </a>
-                    <a href="#" class="flex items-center px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 transition-colors">
-                        <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <a href="{{ route('admin.kategoris.index') }}" class="flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('admin.kategoris.*') ? 'bg-indigo-600/90 text-white' : 'text-slate-300 hover:text-white hover:bg-slate-800' }}">
+                        <svg class="h-5 w-5 mr-3 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
                         </svg>
                         Kategori Aset
-                        <span class="ml-auto text-[10px] bg-slate-800 px-1.5 py-0.5 rounded text-slate-400">Fase 2</span>
                     </a>
-                    <a href="#" class="flex items-center px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 transition-colors">
-                        <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <a href="{{ route('admin.asets.index') }}" class="flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('admin.asets.*') ? 'bg-indigo-600/90 text-white' : 'text-slate-300 hover:text-white hover:bg-slate-800' }}">
+                        <svg class="h-5 w-5 mr-3 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
                         </svg>
                         Aset & QR Code
-                        <span class="ml-auto text-[10px] bg-slate-800 px-1.5 py-0.5 rounded text-slate-400">Fase 2</span>
                     </a>
                 </div>
 
@@ -191,3 +188,4 @@
         </div>
     </div>
 </aside>
+
