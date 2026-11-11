@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Member;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\MemberReopenTiketRequest;
 use App\Http\Requests\MemberTiketRequest;
 use App\Models\Aset;
 use App\Models\Tiket;
@@ -95,5 +96,45 @@ class TiketController extends Controller
         $tiket->load(['aset.lab.penanggungJawab', 'aset.kategori', 'fotos', 'logs.user', 'teknisi']);
 
         return view('member.tikets.show', compact('tiket'));
+    }
+
+    /**
+     * Konfirmasi hasil perbaikan (Setuju) oleh Member pelapor (FR-19).
+     */
+    public function konfirmasi(Request $request, Tiket $tiket): RedirectResponse
+    {
+        if ($tiket->pelapor_id !== Auth::id()) {
+            abort(403, 'Akses Ditolak: Anda hanya dapat mengonfirmasi tiket milik Anda sendiri.');
+        }
+
+        try {
+            $this->tiketService->konfirmasiSelesaiMember($tiket, Auth::user());
+
+            return redirect()->route('member.tikets.show', $tiket)
+                ->with('success', "Terima kasih! Penyelesaian tiket {$tiket->nomor_tiket} telah berhasil Anda konfirmasi.");
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', $e->getMessage());
+        }
+    }
+
+    /**
+     * Buka kembali tiket jika hasil perbaikan belum tuntas oleh Member pelapor (FR-19).
+     */
+    public function reopen(MemberReopenTiketRequest $request, Tiket $tiket): RedirectResponse
+    {
+        if ($tiket->pelapor_id !== Auth::id()) {
+            abort(403, 'Akses Ditolak: Anda hanya dapat membuka kembali tiket milik Anda sendiri.');
+        }
+
+        try {
+            $this->tiketService->bukaKembaliMember($tiket, $request->alasan, Auth::user());
+
+            return redirect()->route('member.tikets.show', $tiket)
+                ->with('success', "Tiket {$tiket->nomor_tiket} telah dibuka kembali dan dikembalikan ke penanganan teknisi.");
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', $e->getMessage());
+        }
     }
 }

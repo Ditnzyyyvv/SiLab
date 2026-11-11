@@ -38,7 +38,13 @@ class DashboardController extends Controller
         $totalLab = Lab::count();
         $totalKategori = Kategori::count();
 
+        // Tiket metrics
+        $pendingTiketCount = Tiket::where('status', 'Pending')->count();
+        $diprosesTiketCount = Tiket::whereIn('status', ['Diproses', 'Menunggu Komponen/Sparepart'])->count();
+        $selesaiTiketCount = Tiket::where('status', 'Selesai')->count();
+
         $recentAsets = Aset::with(['lab', 'kategori'])->latest()->take(5)->get();
+        $recentTikets = Tiket::with(['aset.lab', 'pelapor', 'teknisi'])->latest()->take(5)->get();
 
         return view('admin.dashboard', compact(
             'totalAset',
@@ -47,16 +53,41 @@ class DashboardController extends Controller
             'asetPerbaikan',
             'totalLab',
             'totalKategori',
-            'recentAsets'
+            'pendingTiketCount',
+            'diprosesTiketCount',
+            'selesaiTiketCount',
+            'recentAsets',
+            'recentTikets'
         ));
     }
 
     /**
-     * Teknisi Dashboard view.
+     * Teknisi Dashboard view (FR-26).
      */
     public function teknisi(): View
     {
-        return view('teknisi.dashboard');
+        $teknisiId = Auth::id();
+
+        $tugasAktifCount = Tiket::where('teknisi_id', $teknisiId)->where('status', 'Diproses')->count();
+        $tugasSparepartCount = Tiket::where('teknisi_id', $teknisiId)->where('status', 'Menunggu Komponen/Sparepart')->count();
+        $tugasSelesaiBulanIni = Tiket::where('teknisi_id', $teknisiId)
+            ->where('status', 'Selesai')
+            ->whereMonth('tanggal_selesai', now()->month)
+            ->whereYear('tanggal_selesai', now()->year)
+            ->count();
+
+        $recentTugas = Tiket::with(['aset.lab'])
+            ->where('teknisi_id', $teknisiId)
+            ->latest('tanggal_disposisi')
+            ->take(5)
+            ->get();
+
+        return view('teknisi.dashboard', compact(
+            'tugasAktifCount',
+            'tugasSparepartCount',
+            'tugasSelesaiBulanIni',
+            'recentTugas'
+        ));
     }
 
     /**

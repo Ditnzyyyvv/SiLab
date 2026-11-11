@@ -103,12 +103,11 @@
                 </div>
 
                 <div class="px-3 pt-4 pb-1 text-[11px] font-bold uppercase tracking-wider text-slate-400">Pengaduan & Tiket</div>
-                <a href="#" class="flex items-center px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 transition-colors">
-                    <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <a href="{{ route('admin.tikets.index') }}" class="flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('admin.tikets.*') ? 'bg-indigo-600/90 text-white' : 'text-slate-300 hover:text-white hover:bg-slate-800' }}">
+                    <svg class="h-5 w-5 mr-3 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                     </svg>
-                    Semua Tiket
-                    <span class="ml-auto text-[10px] bg-slate-800 px-1.5 py-0.5 rounded text-slate-400">Fase 3</span>
+                    Validasi & Tiket
                 </a>
 
                 <div class="px-3 pt-4 pb-1 text-[11px] font-bold uppercase tracking-wider text-slate-400">Laporan</div>
@@ -131,12 +130,11 @@
                 </a>
 
                 <div class="px-3 pt-4 pb-1 text-[11px] font-bold uppercase tracking-wider text-slate-400">Perbaikan</div>
-                <a href="#" class="flex items-center px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 transition-colors">
-                    <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <a href="{{ route('teknisi.tugas.index') }}" class="flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('teknisi.tugas.*') ? 'bg-amber-600/90 text-white' : 'text-slate-300 hover:text-white hover:bg-slate-800' }}">
+                    <svg class="h-5 w-5 mr-3 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                     </svg>
                     Tugas Saya
-                    <span class="ml-auto text-[10px] bg-slate-800 px-1.5 py-0.5 rounded text-slate-400">Fase 4</span>
                 </a>
 
             @else

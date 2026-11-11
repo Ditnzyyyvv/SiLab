@@ -39,6 +39,67 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <!-- Left 2 Cols: Ticket Information & Damage Evidence -->
             <div class="lg:col-span-2 space-y-6">
+                <!-- Action Card for Member: Konfirmasi / Buka Kembali (FR-19) -->
+                @if($tiket->status === 'Selesai')
+                    @if(! $tiket->dikonfirmasi_at)
+                        <div x-data="{ openReopen: false }" class="bg-emerald-50 border border-emerald-300 rounded-xl p-6 shadow-xs">
+                            <div class="flex items-start space-x-3">
+                                <div class="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 text-lg font-bold">
+                                    ✓
+                                </div>
+                                <div class="flex-1">
+                                    <h3 class="text-sm font-bold text-emerald-950">Perbaikan Selesai — Mohon Konfirmasi Anda (FR-19)</h3>
+                                    <p class="text-xs text-emerald-800 mt-1 leading-relaxed">
+                                        Teknisi telah menyelesaikan tindakan perbaikan pada perangkat ini. Silakan periksa kondisi fisik dan fungsi perangkat di laboratorium sekolah.
+                                    </p>
+                                    <div class="mt-4 flex flex-wrap gap-3">
+                                        <!-- Form Konfirmasi Setuju -->
+                                        <form action="{{ route('member.tikets.konfirmasi', $tiket) }}" method="POST">
+                                            @csrf
+                                            <button type="submit" onclick="return confirm('Apakah Anda yakin ingin menyetujui dan mengonfirmasi penyelesaian tiket ini?')" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-lg shadow-xs transition-colors">
+                                                ✓ Setuju & Konfirmasi Selesai
+                                            </button>
+                                        </form>
+
+                                        <!-- Tombol Buka Kembali -->
+                                        <button @click="openReopen = !openReopen" type="button" class="px-4 py-2 bg-white hover:bg-rose-50 text-rose-700 border border-rose-300 text-xs font-semibold rounded-lg shadow-xs transition-colors">
+                                            <span x-text="openReopen ? 'Batal' : 'Masih Bermasalah? Buka Kembali Tiket'"></span>
+                                        </button>
+                                    </div>
+
+                                    <!-- Form Alasan Buka Kembali -->
+                                    <div x-show="openReopen" x-collapse class="mt-4 pt-4 border-t border-emerald-200">
+                                        <form action="{{ route('member.tikets.reopen', $tiket) }}" method="POST" class="space-y-3">
+                                            @csrf
+                                            <div>
+                                                <label class="block text-xs font-bold text-rose-950 mb-1">
+                                                    Alasan Membuka Kembali Tiket (Wajib Diisi) *
+                                                </label>
+                                                <textarea name="alasan" rows="2" required placeholder="Jelaskan kendala yang masih dialami setelah perbaikan teknisi..." class="w-full text-xs rounded-lg border-rose-300 focus:border-rose-500 focus:ring-rose-500">{{ old('alasan') }}</textarea>
+                                                @error('alasan')
+                                                    <p class="text-xs text-rose-600 mt-1">{{ $message }}</p>
+                                                @enderror
+                                            </div>
+                                            <div class="flex justify-end">
+                                                <button type="submit" class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold rounded-lg shadow-xs transition-colors">
+                                                    Kirim Permintaan Buka Kembali
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @else
+                        <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-4 flex items-center space-x-3 text-xs text-emerald-800">
+                            <span class="text-base font-bold">✓</span>
+                            <div>
+                                <strong>Hasil perbaikan telah Anda konfirmasi & disetujui</strong> pada {{ $tiket->dikonfirmasi_at->isoFormat('D MMMM Y, HH:mm') }} WIB.
+                            </div>
+                        </div>
+                    @endif
+                @endif
+
                 <!-- Ticket Content Card -->
                 <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-xs space-y-4">
                     <div>
@@ -144,6 +205,13 @@
                                         <p class="text-[11px] text-amber-700 font-medium">
                                             ⚠️ Komponen: {{ $log->komponen_dibutuhkan }}
                                         </p>
+                                    @endif
+                                    @if($log->foto_bukti)
+                                        <div class="mt-2">
+                                            <a href="{{ $log->foto_bukti_url }}" target="_blank" class="inline-block rounded-lg overflow-hidden border border-slate-200">
+                                                <img src="{{ $log->foto_bukti_url }}" alt="Bukti Teknisi" class="h-20 w-auto object-cover">
+                                            </a>
+                                        </div>
                                     @endif
                                     <div class="text-[10px] text-slate-400">
                                         Oleh: {{ $log->user ? ($log->user->nama ?? $log->user->name) : 'Sistem / Pelapor' }}
