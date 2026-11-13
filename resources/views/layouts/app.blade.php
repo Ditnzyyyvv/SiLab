@@ -73,7 +73,7 @@
                                     x-transition:leave="transition ease-in duration-100"
                                     x-transition:leave-start="opacity-100 scale-100"
                                     x-transition:leave-end="opacity-0 scale-95"
-                                    class="absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-xl shadow-xl border border-slate-200 z-50 overflow-hidden"
+                                    class="absolute right-0 mt-2 w-72 sm:w-96 bg-white rounded-xl shadow-xl border border-slate-200 z-50 overflow-hidden"
                                     style="display: none;"
                                 >
                                     <div class="p-3 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
