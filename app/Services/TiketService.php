@@ -267,7 +267,16 @@ class TiketService
             // FR-24: Otomatis sinkronkan kondisi aset
             if ($statusKe === 'Selesai') {
                 $updates['tanggal_selesai'] = now();
-                $tiket->aset?->update(['kondisi' => 'Baik']);
+
+                // Periksa apakah masih ada tiket penanganan lain yang aktif pada aset ini
+                $hasOtherActiveTickets = Tiket::where('aset_id', $tiket->aset_id)
+                    ->where('id', '!=', $tiket->id)
+                    ->whereIn('status', ['Pending', 'Diproses', 'Menunggu Komponen/Sparepart'])
+                    ->exists();
+
+                if (! $hasOtherActiveTickets) {
+                    $tiket->aset?->update(['kondisi' => 'Baik']);
+                }
             } elseif ($statusKe === 'Rusak Total') {
                 $tiket->aset?->update(['kondisi' => 'Tidak Layak Pakai']);
             } elseif ($statusKe === 'Diproses') {
@@ -321,6 +330,10 @@ class TiketService
                 throw new InvalidArgumentException("Tiket belum berstatus Selesai.");
             }
 
+            if ($tiket->dikonfirmasi_at !== null) {
+                throw new InvalidArgumentException("Tiket ini sudah dikonfirmasi sebelumnya.");
+            }
+
             $tiket->update([
                 'dikonfirmasi_at' => now(),
             ]);
@@ -349,6 +362,10 @@ class TiketService
 
             if ($tiket->status !== 'Selesai') {
                 throw new InvalidArgumentException("Hanya tiket berstatus Selesai yang dapat dibuka kembali.");
+            }
+
+            if ($tiket->dikonfirmasi_at !== null) {
+                throw new InvalidArgumentException("Tiket yang sudah Anda konfirmasi tuntas tidak dapat dibuka kembali.");
             }
 
             if (empty(trim($alasan))) {
@@ -402,6 +419,10 @@ class TiketService
 
             if ($tiket->status !== 'Selesai') {
                 throw new InvalidArgumentException("Tiket belum berstatus Selesai.");
+            }
+
+            if ($tiket->dikonfirmasi_at !== null) {
+                throw new InvalidArgumentException("Tiket tamu ini sudah dikonfirmasi sebelumnya.");
             }
 
             $tiket->update([

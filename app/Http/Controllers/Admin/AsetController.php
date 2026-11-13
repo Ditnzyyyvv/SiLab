@@ -122,6 +122,15 @@ class AsetController extends Controller
      */
     public function destroy(Aset $aset): RedirectResponse
     {
+        $activeTicketsCount = $aset->tikets()
+            ->whereIn('status', ['Pending', 'Diproses', 'Menunggu Komponen/Sparepart'])
+            ->count();
+
+        if ($activeTicketsCount > 0) {
+            return redirect()->back()
+                ->with('error', "Aset {$aset->kode_aset} tidak dapat dihapus karena masih memiliki {$activeTicketsCount} tiket penanganan yang sedang aktif.");
+        }
+
         $this->asetService->deleteAset($aset);
 
         return redirect()->route('admin.asets.index')
