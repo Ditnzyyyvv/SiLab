@@ -33,3 +33,4 @@ class TiketBaruNotification extends Notification
         ];
     }
 }
+
