@@ -24,7 +24,7 @@
             </div>
         </div>
 
-        <!-- Metric Grid Master Data -->
+        <!-- Metric Grid -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <!-- Total Aset -->
             <div class="bg-white rounded-xl p-5 border border-slate-200 shadow-xs">
@@ -99,6 +99,134 @@
             </a>
         </div>
 
+        <!-- SECTION: CHART.JS ANALYTICS (FR-25) -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Chart 1: Tren Bulanan Tiket Masuk vs Selesai -->
+            <div class="bg-white rounded-xl border border-slate-200 shadow-xs p-5">
+                <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-900">Grafik Tiket Masuk dan Selesai</h3>
+                        <p class="text-xs text-slate-500">Tren volume laporan kerusakan dalam 6 bulan terakhir</p>
+                    </div>
+                    <span class="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600">Bulanan</span>
+                </div>
+                <div class="mt-4 relative h-64">
+                    <canvas id="monthlyTrendChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Chart 2: Kondisi Fisik Aset -->
+            <div class="bg-white rounded-xl border border-slate-200 shadow-xs p-5">
+                <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-900">Distribusi Kondisi Aset</h3>
+                        <p class="text-xs text-slate-500">Kondisi seluruh perangkat laboratorium saat ini</p>
+                    </div>
+                    <span class="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600">{{ $totalAset }} Aset</span>
+                </div>
+                <div class="mt-4 relative h-64 flex items-center justify-center">
+                    <canvas id="kondisiAsetChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Chart 3: Proporsi Tiket Berdasarkan Status -->
+            <div class="bg-white rounded-xl border border-slate-200 shadow-xs p-5">
+                <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-900">Komposisi Status Tiket</h3>
+                        <p class="text-xs text-slate-500">Rasio seluruh tiket pengaduan kerusakan yang tercatat</p>
+                    </div>
+                    <span class="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600">Semua Waktu</span>
+                </div>
+                <div class="mt-4 relative h-64 flex items-center justify-center">
+                    <canvas id="statusTiketChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Widget: Beban Kerja per Teknisi (FR-25) -->
+            <div class="bg-white rounded-xl border border-slate-200 shadow-xs p-5">
+                <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-900">Beban Kerja Teknisi (FR-25)</h3>
+                        <p class="text-xs text-slate-500">Jumlah tugas aktif dan tugas yang telah diselesaikan</p>
+                    </div>
+                    <span class="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600">{{ $teknisiWorkload->count() }} Teknisi</span>
+                </div>
+                <div class="mt-4 space-y-4">
+                    @forelse($teknisiWorkload as $tek)
+                        @php
+                            $totalTugasTek = $tek->aktif_count + $tek->selesai_count;
+                            $pctAktif = $totalTugasTek > 0 ? round(($tek->aktif_count / $totalTugasTek) * 100) : 0;
+                        @endphp
+                        <div class="p-3 rounded-lg bg-slate-50 border border-slate-100">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-7 h-7 rounded-full bg-slate-800 text-white flex items-center justify-center text-xs font-bold">
+                                        {{ strtoupper(substr($tek->nama, 0, 1)) }}
+                                    </div>
+                                    <span class="text-xs font-bold text-slate-900">{{ $tek->nama }}</span>
+                                </div>
+                                <div class="flex items-center space-x-3 text-xs">
+                                    <span class="text-blue-700 font-semibold">{{ $tek->aktif_count }} Aktif</span>
+                                    <span class="text-slate-300">•</span>
+                                    <span class="text-emerald-700 font-semibold">{{ $tek->selesai_count }} Selesai</span>
+                                </div>
+                            </div>
+                            <!-- Bar Progres Beban Kerja -->
+                            <div class="w-full bg-slate-200 rounded-full h-1.5 mt-2.5 overflow-hidden flex">
+                                <div class="bg-blue-600 h-1.5" style="width: {{ $pctAktif }}%" title="{{ $tek->aktif_count }} Aktif"></div>
+                                <div class="bg-emerald-500 h-1.5" style="width: {{ 100 - $pctAktif }}%" title="{{ $tek->selesai_count }} Selesai"></div>
+                            </div>
+                        </div>
+                    @empty
+                        <p class="text-xs text-slate-400 italic">Belum ada akun teknisi yang terdaftar.</p>
+                    @endforelse
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION: TIKET PRIORITAS TINGGI YANG BELUM SELESAI (FR-25) -->
+        @if($tiketPrioritasTinggi->isNotEmpty())
+            <div class="bg-white rounded-xl border border-rose-200 shadow-xs overflow-hidden">
+                <div class="p-4 bg-rose-50/70 border-b border-rose-100 flex items-center justify-between">
+                    <div class="flex items-center space-x-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-rose-500 animate-ping"></span>
+                        <h3 class="text-sm font-bold text-rose-900">Perhatian: Tiket Prioritas Tinggi Belum Selesai (FR-25)</h3>
+                    </div>
+                    <span class="text-xs font-semibold px-2 py-0.5 rounded bg-rose-100 text-rose-800">
+                        {{ $tiketPrioritasTinggi->count() }} Kasus Mendesak
+                    </span>
+                </div>
+                <div class="divide-y divide-rose-100">
+                    @foreach($tiketPrioritasTinggi as $hiTiket)
+                        <div class="p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 hover:bg-rose-50/20 transition-colors">
+                            <div class="space-y-1">
+                                <div class="flex items-center space-x-2">
+                                    <a href="{{ route('admin.tikets.show', $hiTiket) }}" class="font-mono font-bold text-xs text-rose-700 hover:underline">
+                                        {{ $hiTiket->nomor_tiket }}
+                                    </a>
+                                    <span class="text-xs text-slate-400">•</span>
+                                    <span class="text-xs font-semibold text-slate-800">{{ $hiTiket->aset->nama }}</span>
+                                    <span class="text-xs text-slate-500">({{ $hiTiket->aset->lab->nama }})</span>
+                                </div>
+                                <p class="text-xs text-slate-600 line-clamp-1">{{ $hiTiket->judul }}</p>
+                                <div class="text-[11px] text-slate-400">
+                                    Status: <strong class="text-slate-700">{{ $hiTiket->status }}</strong> • 
+                                    Teknisi: <strong class="text-slate-700">{{ $hiTiket->teknisi ? $hiTiket->teknisi->nama : 'Belum Ditugaskan' }}</strong>
+                                </div>
+                            </div>
+                            <div class="shrink-0">
+                                <a href="{{ route('admin.tikets.show', $hiTiket) }}" class="inline-flex items-center px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold rounded-lg shadow-2xs transition-colors">
+                                    Tangani Sekarang →
+                                </a>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        @endif
+
+        <!-- SECTION: AKTIVITAS TERBARU (Tiket & Aset) -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <!-- Recent Tickets Table -->
             <div class="bg-white rounded-xl border border-slate-200 shadow-xs overflow-hidden">
@@ -228,4 +356,125 @@
             </div>
         </div>
     </div>
+
+    <!-- Chart.js Scripts Initialization -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            if (typeof window.Chart === 'undefined') return;
+
+            // 1. Chart Tren Bulanan
+            const monthlyCtx = document.getElementById('monthlyTrendChart');
+            if (monthlyCtx) {
+                new window.Chart(monthlyCtx, {
+                    type: 'line',
+                    data: {
+                        labels: @json($monthlyChart['labels']),
+                        datasets: [
+                            {
+                                label: 'Tiket Masuk',
+                                data: @json($monthlyChart['masuk']),
+                                borderColor: '#4f46e5',
+                                backgroundColor: 'rgba(79, 70, 229, 0.1)',
+                                tension: 0.35,
+                                fill: true,
+                                borderWidth: 2,
+                                pointRadius: 4,
+                            },
+                            {
+                                label: 'Tiket Selesai',
+                                data: @json($monthlyChart['selesai']),
+                                borderColor: '#10b981',
+                                backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                                tension: 0.35,
+                                fill: true,
+                                borderWidth: 2,
+                                pointRadius: 4,
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { position: 'top', labels: { boxWidth: 12, font: { size: 11 } } },
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: { stepSize: 1, font: { size: 10 } },
+                                grid: { color: '#f1f5f9' }
+                            },
+                            x: {
+                                ticks: { font: { size: 10 } },
+                                grid: { display: false }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // 2. Chart Kondisi Aset
+            const kondisiCtx = document.getElementById('kondisiAsetChart');
+            if (kondisiCtx) {
+                new window.Chart(kondisiCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: @json(array_keys($kondisiCounts)),
+                        datasets: [{
+                            data: @json(array_values($kondisiCounts)),
+                            backgroundColor: [
+                                '#10b981', // Baik
+                                '#f59e0b', // Rusak Ringan
+                                '#f97316', // Rusak Berat
+                                '#3b82f6', // Dalam Perbaikan
+                                '#ef4444', // Tidak Layak Pakai
+                            ],
+                            borderWidth: 2,
+                            borderColor: '#ffffff',
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 11 } } }
+                        },
+                        cutout: '65%'
+                    }
+                });
+            }
+
+            // 3. Chart Status Tiket
+            const statusCtx = document.getElementById('statusTiketChart');
+            if (statusCtx) {
+                new window.Chart(statusCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: @json(array_keys($statusCounts)),
+                        datasets: [{
+                            data: @json(array_values($statusCounts)),
+                            backgroundColor: [
+                                '#fbbf24', // Pending
+                                '#3b82f6', // Diproses
+                                '#f97316', // Menunggu Sparepart
+                                '#10b981', // Selesai
+                                '#ef4444', // Rusak Total
+                                '#f43f5e', // Ditolak
+                            ],
+                            borderWidth: 2,
+                            borderColor: '#ffffff',
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 11 } } }
+                        },
+                        cutout: '65%'
+                    }
+                });
+            }
+        });
+    </script>
 </x-app-layout>

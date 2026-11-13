@@ -6,10 +6,11 @@ use App\Models\Aset;
 use App\Models\Kategori;
 use App\Models\Lab;
 use App\Models\Tiket;
+use App\Models\User;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
-use Illuminate\Http\RedirectResponse;
 
 class DashboardController extends Controller
 {
@@ -27,7 +28,7 @@ class DashboardController extends Controller
     }
 
     /**
-     * Admin Dashboard view.
+     * Admin Dashboard view (FR-25).
      */
     public function admin(): View
     {
@@ -43,6 +44,71 @@ class DashboardController extends Controller
         $diprosesTiketCount = Tiket::whereIn('status', ['Diproses', 'Menunggu Komponen/Sparepart'])->count();
         $selesaiTiketCount = Tiket::where('status', 'Selesai')->count();
 
+        // FR-25: Tiket prioritas tinggi yang belum selesai
+        $tiketPrioritasTinggi = Tiket::with(['aset.lab', 'teknisi'])
+            ->where('prioritas', 'Tinggi')
+            ->whereNotIn('status', ['Selesai', 'Rusak Total', 'Ditolak'])
+            ->latest()
+            ->take(5)
+            ->get();
+
+        // FR-25: Beban kerja per teknisi
+        $teknisiWorkload = User::where('role', 'teknisi')
+            ->withCount([
+                'tiketsSebagaiTeknisi as aktif_count' => function ($q) {
+                    $q->whereIn('status', ['Diproses', 'Menunggu Komponen/Sparepart']);
+                },
+                'tiketsSebagaiTeknisi as selesai_count' => function ($q) {
+                    $q->where('status', 'Selesai');
+                },
+            ])
+            ->get();
+
+        // FR-25: Distribusi kondisi aset untuk Chart
+        $kondisiCounts = [
+            'Baik' => $asetBaik,
+            'Rusak Ringan' => Aset::where('kondisi', 'Rusak Ringan')->count(),
+            'Rusak Berat' => Aset::where('kondisi', 'Rusak Berat')->count(),
+            'Dalam Perbaikan' => $asetPerbaikan,
+            'Tidak Layak Pakai' => Aset::where('kondisi', 'Tidak Layak Pakai')->count(),
+        ];
+
+        // FR-25: Tiket per status untuk Chart
+        $statusCounts = [
+            'Pending' => $pendingTiketCount,
+            'Diproses' => Tiket::where('status', 'Diproses')->count(),
+            'Menunggu Sparepart' => Tiket::where('status', 'Menunggu Komponen/Sparepart')->count(),
+            'Selesai' => $selesaiTiketCount,
+            'Rusak Total' => Tiket::where('status', 'Rusak Total')->count(),
+            'Ditolak' => Tiket::where('status', 'Ditolak')->count(),
+        ];
+
+        // FR-25: Grafik tren tiket masuk & selesai per bulan (6 bulan terakhir)
+        $months = collect();
+        for ($i = 5; $i >= 0; $i--) {
+            $date = now()->subMonths($i);
+            $months->push([
+                'label' => $date->isoFormat('MMM Y'),
+                'year' => $date->year,
+                'month' => $date->month,
+            ]);
+        }
+
+        $monthlyChart = [
+            'labels' => $months->pluck('label')->toArray(),
+            'masuk' => $months->map(function ($m) {
+                return Tiket::whereYear('created_at', $m['year'])
+                    ->whereMonth('created_at', $m['month'])
+                    ->count();
+            })->toArray(),
+            'selesai' => $months->map(function ($m) {
+                return Tiket::where('status', 'Selesai')
+                    ->whereYear('tanggal_selesai', $m['year'])
+                    ->whereMonth('tanggal_selesai', $m['month'])
+                    ->count();
+            })->toArray(),
+        ];
+
         $recentAsets = Aset::with(['lab', 'kategori'])->latest()->take(5)->get();
         $recentTikets = Tiket::with(['aset.lab', 'pelapor', 'teknisi'])->latest()->take(5)->get();
 
@@ -56,6 +122,11 @@ class DashboardController extends Controller
             'pendingTiketCount',
             'diprosesTiketCount',
             'selesaiTiketCount',
+            'tiketPrioritasTinggi',
+            'teknisiWorkload',
+            'kondisiCounts',
+            'statusCounts',
+            'monthlyChart',
             'recentAsets',
             'recentTikets'
         ));
@@ -76,6 +147,36 @@ class DashboardController extends Controller
             ->whereYear('tanggal_selesai', now()->year)
             ->count();
 
+        // Chart komposisi status tugas
+        $tugasStatusCounts = [
+            'Diproses' => $tugasAktifCount,
+            'Menunggu Sparepart' => $tugasSparepartCount,
+            'Selesai' => Tiket::where('teknisi_id', $teknisiId)->where('status', 'Selesai')->count(),
+            'Rusak Total' => Tiket::where('teknisi_id', $teknisiId)->where('status', 'Rusak Total')->count(),
+        ];
+
+        // Chart tren bulanan tugas selesai (6 bulan terakhir)
+        $months = collect();
+        for ($i = 5; $i >= 0; $i--) {
+            $date = now()->subMonths($i);
+            $months->push([
+                'label' => $date->isoFormat('MMM Y'),
+                'year' => $date->year,
+                'month' => $date->month,
+            ]);
+        }
+
+        $teknisiMonthlyChart = [
+            'labels' => $months->pluck('label')->toArray(),
+            'selesai' => $months->map(function ($m) use ($teknisiId) {
+                return Tiket::where('teknisi_id', $teknisiId)
+                    ->where('status', 'Selesai')
+                    ->whereYear('tanggal_selesai', $m['year'])
+                    ->whereMonth('tanggal_selesai', $m['month'])
+                    ->count();
+            })->toArray(),
+        ];
+
         $recentTugas = Tiket::with(['aset.lab'])
             ->where('teknisi_id', $teknisiId)
             ->latest('tanggal_disposisi')
@@ -86,6 +187,8 @@ class DashboardController extends Controller
             'tugasAktifCount',
             'tugasSparepartCount',
             'tugasSelesaiBulanIni',
+            'tugasStatusCounts',
+            'teknisiMonthlyChart',
             'recentTugas'
         ));
     }
@@ -102,6 +205,16 @@ class DashboardController extends Controller
         $selesaiCount = Tiket::where('pelapor_id', $userId)->where('status', 'Selesai')->count();
         $totalTiketSaya = Tiket::where('pelapor_id', $userId)->count();
 
+        // Chart proporsi status tiket saya (FR-27)
+        $memberStatusCounts = [
+            'Pending' => $pendingCount,
+            'Diproses' => Tiket::where('pelapor_id', $userId)->where('status', 'Diproses')->count(),
+            'Menunggu Sparepart' => Tiket::where('pelapor_id', $userId)->where('status', 'Menunggu Komponen/Sparepart')->count(),
+            'Selesai' => $selesaiCount,
+            'Rusak Total' => Tiket::where('pelapor_id', $userId)->where('status', 'Rusak Total')->count(),
+            'Ditolak' => Tiket::where('pelapor_id', $userId)->where('status', 'Ditolak')->count(),
+        ];
+
         $recentTikets = Tiket::with('aset.lab')
             ->where('pelapor_id', $userId)
             ->latest()
@@ -113,8 +226,8 @@ class DashboardController extends Controller
             'diprosesCount',
             'selesaiCount',
             'totalTiketSaya',
+            'memberStatusCounts',
             'recentTikets'
         ));
     }
 }
-

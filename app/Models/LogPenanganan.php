@@ -37,3 +37,4 @@ class LogPenanganan extends Model
         return $this->foto_bukti ? asset('storage/' . $this->foto_bukti) : null;
     }
 }
+

@@ -37,3 +37,4 @@ class MemberTiketRequest extends FormRequest
         ];
     }
 }
+

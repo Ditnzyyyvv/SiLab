@@ -27,3 +27,4 @@ class MemberReopenTiketRequest extends FormRequest
         ];
     }
 }
+

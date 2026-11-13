@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\LabController;
 use App\Http\Controllers\Admin\TiketController as AdminTiketController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Member\TiketController as MemberTiketController;
+use App\Http\Controllers\NotifikasiController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PublicLaporController;
 use App\Http\Controllers\Teknisi\TugasController as TeknisiTugasController;
@@ -72,6 +73,11 @@ Route::middleware(['auth', 'role:member'])->prefix('member')->name('member.')->g
 });
 
 Route::middleware('auth')->group(function () {
+    // Notifikasi Dalam Aplikasi (FR-28)
+    Route::get('/notifikasi', [NotifikasiController::class, 'index'])->name('notifikasi.index');
+    Route::get('/notifikasi/{id}/read', [NotifikasiController::class, 'read'])->name('notifikasi.read');
+    Route::post('/notifikasi/mark-all-read', [NotifikasiController::class, 'markAllRead'])->name('notifikasi.mark-all-read');
+
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');

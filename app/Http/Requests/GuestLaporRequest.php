@@ -37,3 +37,4 @@ class GuestLaporRequest extends FormRequest
         ];
     }
 }
+

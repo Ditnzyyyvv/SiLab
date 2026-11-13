@@ -61,3 +61,4 @@ class PublicLaporController extends Controller
         return view('lapor.success', compact('tiket'));
     }
 }
+

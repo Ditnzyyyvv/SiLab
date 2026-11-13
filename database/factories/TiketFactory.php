@@ -98,3 +98,4 @@ class TiketFactory extends Factory
         ]);
     }
 }
+

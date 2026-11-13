@@ -81,6 +81,37 @@
             </a>
         </div>
 
+        <!-- SECTION: CHART.JS UNTUK TEKNISI (FR-26) -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Chart 1: Komposisi Status Tugas Saya -->
+            <div class="bg-white rounded-xl border border-slate-200 shadow-xs p-5">
+                <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-900">Distribusi Status Tugas Saya</h3>
+                        <p class="text-xs text-slate-500">Rasio penanganan tugas yang pernah dipercayakan</p>
+                    </div>
+                    <span class="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600">Semua Tugas</span>
+                </div>
+                <div class="mt-4 relative h-64 flex items-center justify-center">
+                    <canvas id="teknisiStatusChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Chart 2: Tren Penyelesaian Tugas Bulanan -->
+            <div class="bg-white rounded-xl border border-slate-200 shadow-xs p-5">
+                <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-900">Produktivitas Selesai Bulanan</h3>
+                        <p class="text-xs text-slate-500">Jumlah aset yang berhasil diselesaikan per bulan</p>
+                    </div>
+                    <span class="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600">6 Bulan</span>
+                </div>
+                <div class="mt-4 relative h-64">
+                    <canvas id="teknisiTrendChart"></canvas>
+                </div>
+            </div>
+        </div>
+
         <!-- Tabel Tugas Terbaru -->
         <div class="bg-white rounded-xl border border-slate-200 shadow-xs overflow-hidden">
             <div class="p-5 border-b border-slate-100 flex items-center justify-between">
@@ -167,4 +198,76 @@
             </div>
         </div>
     </div>
+
+    <!-- Chart.js Initialization for Teknisi -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            if (typeof window.Chart === 'undefined') return;
+
+            // 1. Doughnut Chart Status Tugas
+            const statusCtx = document.getElementById('teknisiStatusChart');
+            if (statusCtx) {
+                new window.Chart(statusCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: @json(array_keys($tugasStatusCounts)),
+                        datasets: [{
+                            data: @json(array_values($tugasStatusCounts)),
+                            backgroundColor: [
+                                '#3b82f6', // Diproses
+                                '#f97316', // Menunggu Sparepart
+                                '#10b981', // Selesai
+                                '#ef4444', // Rusak Total
+                            ],
+                            borderWidth: 2,
+                            borderColor: '#ffffff',
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 11 } } }
+                        },
+                        cutout: '65%'
+                    }
+                });
+            }
+
+            // 2. Bar Chart Tren Selesai
+            const trendCtx = document.getElementById('teknisiTrendChart');
+            if (trendCtx) {
+                new window.Chart(trendCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: @json($teknisiMonthlyChart['labels']),
+                        datasets: [{
+                            label: 'Tugas Selesai',
+                            data: @json($teknisiMonthlyChart['selesai']),
+                            backgroundColor: '#10b981',
+                            borderRadius: 6,
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: { stepSize: 1, font: { size: 10 } },
+                                grid: { color: '#f1f5f9' }
+                            },
+                            x: {
+                                ticks: { font: { size: 10 } },
+                                grid: { display: false }
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    </script>
 </x-app-layout>

@@ -7,8 +7,13 @@ use App\Models\LogPenanganan;
 use App\Models\Tiket;
 use App\Models\TiketFoto;
 use App\Models\User;
+use App\Notifications\DisposisiTeknisiNotification;
+use App\Notifications\StatusTiketUpdatedNotification;
+use App\Notifications\TiketBaruNotification;
+use App\Notifications\TiketReopenedNotification;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Notification;
 use InvalidArgumentException;
 
 class TiketService
@@ -65,7 +70,7 @@ class TiketService
      */
     public function createTiket(array $data, array $uploadedFotos = [], ?User $pelapor = null): Tiket
     {
-        return DB::transaction(function () use ($data, $uploadedFotos, $pelapor) {
+        $tiket = DB::transaction(function () use ($data, $uploadedFotos, $pelapor) {
             $nomorTiket = $this->generateNomorTiket();
 
             // Atur informasi pelapor
@@ -115,6 +120,14 @@ class TiketService
 
             return $tiket;
         });
+
+        // FR-28: Notifikasi tiket baru ke semua Admin
+        $admins = User::where('role', 'admin')->get();
+        if ($admins->isNotEmpty()) {
+            Notification::send($admins, new TiketBaruNotification($tiket));
+        }
+
+        return $tiket;
     }
 
     /**
@@ -123,9 +136,10 @@ class TiketService
      */
     public function disposisi(Tiket $tiket, int $teknisiId, string $prioritas, ?string $catatan, User $admin): Tiket
     {
-        return DB::transaction(function () use ($tiket, $teknisiId, $prioritas, $catatan, $admin) {
+        $statusAsal = $tiket->status;
+
+        $tiketDisposisi = DB::transaction(function () use ($tiket, $teknisiId, $prioritas, $catatan, $admin, $statusAsal) {
             $teknisi = User::where('id', $teknisiId)->where('role', 'teknisi')->firstOrFail();
-            $statusAsal = $tiket->status;
 
             $isReassign = in_array($statusAsal, ['Diproses', 'Menunggu Komponen/Sparepart'], true);
 
@@ -164,6 +178,22 @@ class TiketService
 
             return $tiket->fresh();
         });
+
+        // FR-28: Notifikasi disposisi ke Teknisi yang ditugaskan
+        if ($tiketDisposisi->teknisi) {
+            $tiketDisposisi->teknisi->notify(new DisposisiTeknisiNotification($tiketDisposisi));
+        }
+
+        // FR-28: Notifikasi ke Member pelapor bahwa tiket mulai diproses
+        if ($tiketDisposisi->pelapor) {
+            $tiketDisposisi->pelapor->notify(new StatusTiketUpdatedNotification(
+                $tiketDisposisi,
+                $statusAsal,
+                "Tiket Anda telah divalidasi dengan prioritas {$prioritas} dan ditugaskan ke teknisi {$tiketDisposisi->teknisi?->nama}."
+            ));
+        }
+
+        return $tiketDisposisi;
     }
 
     /**
@@ -171,12 +201,12 @@ class TiketService
      */
     public function tolak(Tiket $tiket, string $alasan, User $admin): Tiket
     {
-        return DB::transaction(function () use ($tiket, $alasan, $admin) {
+        $statusAsal = $tiket->status;
+
+        $tiketDitolak = DB::transaction(function () use ($tiket, $alasan, $admin, $statusAsal) {
             if (! $this->canTransition($tiket->status, 'Ditolak')) {
                 throw new InvalidArgumentException("Tiket dengan status {$tiket->status} tidak dapat ditolak.");
             }
-
-            $statusAsal = $tiket->status;
 
             $tiket->update([
                 'status' => 'Ditolak',
@@ -193,6 +223,17 @@ class TiketService
 
             return $tiket->fresh();
         });
+
+        // FR-28: Notifikasi ke Member pelapor jika tiket ditolak
+        if ($tiketDitolak->pelapor) {
+            $tiketDitolak->pelapor->notify(new StatusTiketUpdatedNotification(
+                $tiketDitolak,
+                $statusAsal,
+                "Tiket ditolak oleh Admin. Alasan: {$alasan}"
+            ));
+        }
+
+        return $tiketDitolak;
     }
 
     /**
@@ -206,7 +247,9 @@ class TiketService
         ?UploadedFile $fotoBukti = null,
         User $teknisi
     ): Tiket {
-        return DB::transaction(function () use ($tiket, $statusKe, $catatan, $komponenDibutuhkan, $fotoBukti, $teknisi) {
+        $statusAsal = $tiket->status;
+
+        $tiketUpdated = DB::transaction(function () use ($tiket, $statusKe, $catatan, $komponenDibutuhkan, $fotoBukti, $teknisi, $statusAsal) {
             if ($tiket->teknisi_id !== $teknisi->id) {
                 throw new InvalidArgumentException("Anda tidak berhak menangani tiket ini karena tidak ditugaskan kepada Anda.");
             }
@@ -219,7 +262,6 @@ class TiketService
                 throw new InvalidArgumentException("Nama komponen yang dibutuhkan wajib diisi saat status Menunggu Komponen/Sparepart.");
             }
 
-            $statusAsal = $tiket->status;
             $updates = ['status' => $statusKe];
 
             // FR-24: Otomatis sinkronkan kondisi aset
@@ -252,6 +294,17 @@ class TiketService
 
             return $tiket->fresh();
         });
+
+        // FR-28: Notifikasi ke Member pelapor saat ada pembaruan status
+        if ($tiketUpdated->pelapor) {
+            $tiketUpdated->pelapor->notify(new StatusTiketUpdatedNotification(
+                $tiketUpdated,
+                $statusAsal,
+                $catatan
+            ));
+        }
+
+        return $tiketUpdated;
     }
 
     /**
@@ -289,7 +342,7 @@ class TiketService
      */
     public function bukaKembaliMember(Tiket $tiket, string $alasan, User $member): Tiket
     {
-        return DB::transaction(function () use ($tiket, $alasan, $member) {
+        $tiketReopened = DB::transaction(function () use ($tiket, $alasan, $member) {
             if ($tiket->pelapor_id !== $member->id) {
                 throw new InvalidArgumentException("Anda hanya dapat membuka kembali tiket milik Anda sendiri.");
             }
@@ -321,6 +374,20 @@ class TiketService
 
             return $tiket->fresh();
         });
+
+        // FR-28: Notifikasi ke Teknisi dan Admin bahwa tiket diminta dibuka kembali
+        $recipients = collect();
+        if ($tiketReopened->teknisi) {
+            $recipients->push($tiketReopened->teknisi);
+        }
+        $admins = User::where('role', 'admin')->get();
+        $recipients = $recipients->merge($admins)->unique('id');
+
+        if ($recipients->isNotEmpty()) {
+            Notification::send($recipients, new TiketReopenedNotification($tiketReopened, $alasan));
+        }
+
+        return $tiketReopened;
     }
 
     /**

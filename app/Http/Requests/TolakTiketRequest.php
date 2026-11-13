@@ -27,3 +27,4 @@ class TolakTiketRequest extends FormRequest
         ];
     }
 }
+

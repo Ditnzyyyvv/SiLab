@@ -161,6 +161,22 @@
                     Tiket Saya (Riwayat)
                 </a>
             @endif
+
+            <div class="px-3 pt-4 pb-1 text-[11px] font-bold uppercase tracking-wider text-slate-400">Pemberitahuan</div>
+            <a href="{{ route('notifikasi.index') }}" class="flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('notifikasi.*') ? 'bg-indigo-600 text-white' : 'text-slate-300 hover:text-white hover:bg-slate-800' }}">
+                <svg class="h-5 w-5 mr-3 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                </svg>
+                Notifikasi
+                @php
+                    $sidebarUnread = Auth::user()->unreadNotifications->count();
+                @endphp
+                @if($sidebarUnread > 0)
+                    <span class="ml-auto text-[10px] bg-rose-500 font-bold px-1.5 py-0.2 rounded-full text-white">
+                        {{ $sidebarUnread }}
+                    </span>
+                @endif
+            </a>
         </nav>
     </div>
 
