@@ -62,3 +62,4 @@
 
 ### 4.4 Success State
 - Alert flash notification: `bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl p-4 text-xs flex items-center`.
+

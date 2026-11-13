@@ -55,3 +55,4 @@ Masing-masing divisi dapat diaktifkan pada tab **Agent Manager** yang berbeda se
 
 - Komunikasi antar agen dilakukan melalui berkas di `.team/`.
 - Setiap divisi memperbarui catatan status dan tanggal/jam terakhir pembaruan pada berkas masing-masing.
+

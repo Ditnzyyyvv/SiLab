@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\AsetController;
 use App\Http\Controllers\Admin\KategoriController;
 use App\Http\Controllers\Admin\LabController;
+use App\Http\Controllers\Admin\LaporanController as AdminLaporanController;
 use App\Http\Controllers\Admin\TiketController as AdminTiketController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Member\TiketController as MemberTiketController;
@@ -50,6 +51,15 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::post('tikets/{tiket}/disposisi', [AdminTiketController::class, 'disposisi'])->name('tikets.disposisi');
     Route::post('tikets/{tiket}/tolak', [AdminTiketController::class, 'tolak'])->name('tikets.tolak');
     Route::post('tikets/{tiket}/konfirmasi-tamu', [AdminTiketController::class, 'konfirmasiTamu'])->name('tikets.konfirmasi-tamu');
+
+    // Modul Laporan & Ekspor PDF / Excel (FR-29, FR-30)
+    Route::get('laporan', [AdminLaporanController::class, 'index'])->name('laporan.index');
+    Route::get('laporan/aset', [AdminLaporanController::class, 'aset'])->name('laporan.aset');
+    Route::get('laporan/aset/pdf', [AdminLaporanController::class, 'asetPdf'])->name('laporan.aset.pdf');
+    Route::get('laporan/aset/excel', [AdminLaporanController::class, 'asetExcel'])->name('laporan.aset.excel');
+    Route::get('laporan/perbaikan', [AdminLaporanController::class, 'perbaikan'])->name('laporan.perbaikan');
+    Route::get('laporan/perbaikan/pdf', [AdminLaporanController::class, 'perbaikanPdf'])->name('laporan.perbaikan.pdf');
+    Route::get('laporan/perbaikan/excel', [AdminLaporanController::class, 'perbaikanExcel'])->name('laporan.perbaikan.excel');
 });
 
 // Teknisi Routes

@@ -2,7 +2,7 @@
 
 > **Pemilik Dokumen:** Divisi 4 (QA Tester)  
 > **Terakhir Diperbarui:** 2026-11-13  
-> **Hasil Pengujian Terakhir:** 72/72 Tests PASSED (292 Assertions)
+> **Hasil Pengujian Terakhir:** 80/80 Tests PASSED (348 Assertions)
 
 ---
 
@@ -15,7 +15,8 @@
 | [`tests/Feature/TiketPengaduanTest.php`](file:///c:/Users/Lenovo/Documents/.ukk/tests/Feature/TiketPengaduanTest.php) | Scan QR Tamu vs Member Login | 12 | 46 | **PASS** |
 | [`tests/Feature/TiketPengerjaanTest.php`](file:///c:/Users/Lenovo/Documents/.ukk/tests/Feature/TiketPengerjaanTest.php) | Disposisi, Pengerjaan Teknisi, Reopen | 14 | 64 | **PASS** |
 | [`tests/Feature/DashboardDanNotifikasiTest.php`](file:///c:/Users/Lenovo/Documents/.ukk/tests/Feature/DashboardDanNotifikasiTest.php) | Chart.js 3 Role & In-App Notifications | 10 | 46 | **PASS** |
-| **TOTAL KESELURUHAN** | **Fase 0 s.d. Fase 5 Selesai** | **72** | **292** | **100% PASS** |
+| [`tests/Feature/LaporanEksporTest.php`](file:///c:/Users/Lenovo/Documents/.ukk/tests/Feature/LaporanEksporTest.php) | Ekspor Dokumen Resmi PDF & Excel (FR-29, FR-30) | 8 | 56 | **PASS** |
+| **TOTAL KESELURUHAN** | **Fase 0 s.d. Fase 6 Selesai** | **80** | **348** | **100% PASS** |
 
 ---
 
@@ -28,17 +29,14 @@
 - [x] **Skenario 5 (Buka Kembali oleh Member):** Member merasa perbaikan belum tuntas $\rightarrow$ Buka kembali dengan alasan $\rightarrow$ Tiket kembali ke status `Diproses` $\rightarrow$ Notifikasi masuk ke Teknisi dan Admin.
 - [x] **Skenario 6 (Konfirmasi Tamu oleh Admin):** Tiket tamu yang diselesaikan teknisi diverifikasi langsung oleh Admin $\rightarrow$ Admin menutup konfirmasi tiket tamu (FR-19).
 - [x] **Skenario 7 (Dashboard & Notifikasi):** 3 Dashboard menampilkan Chart.js interaktif $\rightarrow$ Lonceng notifikasi menampilkan badge unread count $\rightarrow$ Klik notifikasi mengarahkan ke tiket target dan otomatis menandai telah dibaca.
+- [x] **Skenario 8 (Laporan & Rekapitulasi Ekspor):** Hub modul `/admin/laporan`, pratinjau tabel aset dengan filter kondisi & lab, pratinjau riwayat tiket dengan filter periode & teknisi, ekspor PDF landscape DomPDF ber-KOP resmi, ekspor Excel / CSV stream UTF-8 BOM untuk Microsoft Excel.
 
 ---
 
 ## 3. Catatan Pengujian Tambahan & Edge Cases
 
-```markdown
-<!-- Format Pencatatan Pengujian Baru -->
-### [TEST-XXX] Pengujian Modul Laporan & Ekspor (Fase 6)
-- **Rute yang Diuji:** `/admin/laporan/aset` dan `/admin/laporan/perbaikan`
-- **Metode:** Ekspor PDF (DomPDF) & Ekspor Excel
-- **Input Edge-Cases:** Filter tanggal kosong, data nol hasil filter
-- **Hasil:** PASS | FAIL
-- **Catatan:** [Evaluasi performa render / kesesuaian cetak]
-```
+### [TEST-008] Pengujian Modul Laporan & Ekspor (Fase 6)
+- **Rute yang Diuji:** `/admin/laporan/aset`, `/admin/laporan/perbaikan`, `/admin/laporan/aset/pdf`, `/admin/laporan/aset/excel`, `/admin/laporan/perbaikan/pdf`, `/admin/laporan/perbaikan/excel`.
+- **Metode:** Ekspor PDF (DomPDF landscape) & Ekspor Excel (StreamedResponse UTF-8 BOM).
+- **Hasil:** PASS (8 tests, 56 assertions).
+- **Catatan:** Format CSV ber-BOM UTF-8 terbuka rapi di Microsoft Excel tanpa karakter rusak. Layout PDF landscape memenuhi standar KOP dinas/sekolah dengan blok tanda tangan pejabat berwenang.
