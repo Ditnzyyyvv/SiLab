@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\KategoriController;
 use App\Http\Controllers\Admin\LabController;
 use App\Http\Controllers\Admin\LaporanController as AdminLaporanController;
 use App\Http\Controllers\Admin\TiketController as AdminTiketController;
+use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Member\TiketController as MemberTiketController;
 use App\Http\Controllers\NotifikasiController;
@@ -13,12 +14,11 @@ use App\Http\Controllers\PublicLaporController;
 use App\Http\Controllers\Teknisi\TugasController as TeknisiTugasController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [PublicLaporController::class, 'home'])->name('home');
 
-// Alur 1: Lapor Cepat Kerusakan via Scan QR Code Tanpa Login (FR-13)
+// Alur 1: Lapor Cepat Kerusakan Tanpa Login (Beranda & Scan QR - FR-13)
 Route::middleware(['throttle:30,1'])->group(function () {
+    Route::post('/lapor', [PublicLaporController::class, 'storePublic'])->name('lapor.store-public');
     Route::get('/lapor/{kode_aset}', [PublicLaporController::class, 'create'])->name('lapor.create');
     Route::post('/lapor/{kode_aset}', [PublicLaporController::class, 'store'])->name('lapor.store');
     Route::get('/lapor/sukses/{nomor_tiket}', [PublicLaporController::class, 'success'])->name('lapor.success');
@@ -44,6 +44,9 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
     // Master Data Aset
     Route::resource('asets', AsetController::class);
+
+    // Manajemen Pengguna (Admin, Teknisi, Member)
+    Route::resource('users', AdminUserController::class)->except(['show']);
 
     // Pengaduan & Disposisi Tiket (FR-16, FR-17, FR-18, FR-19)
     Route::get('tikets', [AdminTiketController::class, 'index'])->name('tikets.index');

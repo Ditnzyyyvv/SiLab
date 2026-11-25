@@ -4,15 +4,16 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Lapor Kerusakan Aset: {{ $aset->kode_aset }} — SiLab</title>
+    <link rel="icon" type="image/png" href="{{ asset('images/silab-logo.png') }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="font-sans antialiased text-slate-800 bg-slate-100 min-h-screen py-8 px-4 flex flex-col justify-center items-center">
     <div class="max-w-xl w-full space-y-6">
         <!-- Brand Header -->
         <div class="text-center">
-            <div class="inline-flex items-center space-x-2 justify-center mb-2">
-                <div class="w-9 h-9 rounded-xl bg-indigo-600 text-white font-bold text-lg flex items-center justify-center shadow-md shadow-indigo-600/30">
-                    SL
+            <div class="inline-flex items-center space-x-2.5 justify-center mb-2">
+                <div class="w-11 h-11 rounded-xl bg-white border border-slate-200 p-1 flex items-center justify-center shadow-sm">
+                    <img src="{{ asset('images/silab-logo.png') }}" alt="Logo SiLab" class="w-full h-full object-contain" />
                 </div>
                 <span class="text-xl font-extrabold text-slate-900 tracking-tight">SiLab</span>
             </div>
@@ -60,14 +61,14 @@
                 <!-- Nama Pelapor -->
                 <div>
                     <label for="nama_pelapor" class="block text-sm font-semibold text-slate-700 mb-1">
-                        Nama Lengkap Anda <span class="text-rose-500">*</span>
+                        Nama Lengkap & Kelas / Jabatan <span class="text-rose-500">*</span>
                     </label>
                     <input 
                         type="text" 
                         id="nama_pelapor" 
                         name="nama_pelapor" 
                         value="{{ old('nama_pelapor', Auth::user()?->nama ?? Auth::user()?->name) }}" 
-                        placeholder="Contoh: Muhammad Reza / Siswa RPL 2"
+                        placeholder="Contoh: Raka Pratama - XI RPL 2 / Guru Mapel"
                         class="w-full text-sm rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 @error('nama_pelapor') border-rose-500 @enderror"
                         required
                     />

@@ -85,7 +85,7 @@ SiLab menyatukan dua hal dalam satu sistem:
 **Alur 1 — Pengaduan kerusakan**
 
 1. Pelaporan kerusakan dapat dilakukan melalui 2 cara:
-   - **Opsi A (Scan QR Tanpa Login / Guest)**: Siswa atau guru memindai stiker QR Code yang tertempel pada aset fisik di lab menggunakan kamera HP/pemindai QR. Sistem langsung membuka halaman formulir lapor cepat publik (`/lapor/{kode_aset}`) tanpa mewajibkan login. Pelapor mengisi nama, kontak (opsional), judul keluhan, deskripsi, dan foto bukti kerusakan, lalu mengirim tiket. Status awal: **Pending**. Pelapor menerima nomor tiket dan pesan sukses (tidak dapat mengakses riwayat/laporan karena tidak login).
+   - **Opsi A (Tanpa Login / Guest — Beranda atau Scan QR)**: Siswa atau guru membuka langsung halaman beranda SiLab (`/`) untuk memilih lab & perangkat pada formulir pengaduan yang otomatis tampil, **atau** memindai stiker QR Code pada aset fisik (`/lapor/{kode_aset}`) tanpa mewajibkan login. Pelapor mengisi nama lengkap & kelas/jabatan, kontak (opsional), judul keluhan, deskripsi, dan foto bukti kerusakan, lalu mengirim tiket. Status awal: **Pending**. Pelapor menerima nomor tiket dan pesan sukses (tidak dapat mengakses riwayat/laporan karena tidak login).
    - **Opsi B (Member Login)**: Member login ke sistem, memilih aset dari daftar atau memindai QR Code, mengisi data tiket, lalu mengirim laporan. Tiket otomatis terhubung ke akun member (`pelapor_id`). Status awal: **Pending**. Member dapat memantau progres tiket di menu "Tiket Saya".
 2. Admin menerima tiket, memvalidasi. Jika valid, admin mengatur prioritas dan menugaskan teknisi (disposisi). Jika tidak valid, tiket ditolak dengan alasan.
 3. Teknisi menerima tugas, mengubah status ke **Diproses**, dan mencatat log penanganan.
@@ -127,7 +127,7 @@ Admin membuka dashboard, memfilter data per lab, kategori, atau periode, lalu me
 ### 6.3 Tiket Pengaduan
 
 - **FR-13** Pembuatan tiket pengaduan dapat dilakukan melalui dua cara:
-  - *Tanpa login via QR Code*: membuka halaman publik lapor cepat `/lapor/{kode_aset}`, mengisi nama pelapor (wajib), kontak/no. WA (opsional), judul, deskripsi, dan foto kerusakan (maksimal 3, format jpg/png, maksimal 2 MB per foto). Sistem menyimpan dengan `pelapor_id = null`.
+  - *Tanpa login (Beranda `/` atau Scan QR `/lapor/{kode_aset}`)*: membuka halaman beranda publik (memilih lab & aset) atau memindai stiker QR aset, mengisi nama lengkap & kelas/jabatan (wajib), kontak/no. WA (opsional), judul, deskripsi, dan foto kerusakan (maksimal 3, format jpg/png, maksimal 2 MB per foto). Sistem menyimpan dengan `pelapor_id = null`.
   - *Dengan login Member*: memilih aset dari daftar atau scan QR, judul, deskripsi, foto kerusakan (maksimal 3, format jpg/png, maksimal 2 MB). Sistem menautkan tiket ke akun member (`pelapor_id`).
 - **FR-14** Nomor tiket otomatis, format `TKT-YYYYMMDD-XXXX`.
 - **FR-15** Member yang login dapat melihat rekapitulasi daftar dan detail tiket miliknya beserta timeline status lengkap di menu "Tiket Saya". Pengguna tanpa login tidak memiliki akses ke halaman riwayat ini.
@@ -219,6 +219,7 @@ Admin membuka dashboard, memfilter data per lab, kategori, atau periode, lalu me
 ## 10. Daftar Halaman
 
 **Publik**:
+- Halaman Beranda (`/`): langsung menampilkan formulir pengaduan kerusakan aset tanpa login (dilengkapi filter Lab → Perangkat Aset) serta tombol Login/Registrasi (opsional).
 - Login dan Registrasi (opsional bagi pelapor).
 - Halaman Lapor Cepat Aset via QR Code (`/lapor/{kode_aset}`): menampilkan info ringkas aset (nama lab, nama aset, kode) dan form pengaduan tanpa login.
 - Halaman Sukses Pengiriman Tiket (menampilkan nomor tiket dan konfirmasi bahwa laporan telah diterima).

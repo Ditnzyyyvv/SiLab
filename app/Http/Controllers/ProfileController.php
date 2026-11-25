@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -47,6 +48,12 @@ class ProfileController extends Controller
         ]);
 
         $user = $request->user();
+
+        // Guard: Jangan izinkan Administrator terakhir menghapus akunnya sendiri
+        if ($user->role === 'admin' && User::where('role', 'admin')->count() <= 1) {
+            return Redirect::route('profile.edit')
+                ->with('error', 'Akun Administrator terakhir tidak dapat dihapus demi menjaga akses pengelolaan sistem.');
+        }
 
         Auth::logout();
 

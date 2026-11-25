@@ -130,14 +130,27 @@
 </head>
 <body>
 
+    @php
+        $logoPath = public_path('images/silab-logo.png');
+        $logoBase64 = file_exists($logoPath) ? 'data:image/png;base64,' . base64_encode(file_get_contents($logoPath)) : null;
+    @endphp
+
     <!-- KOP SURAT RESMI -->
     <table class="kop-table">
         <tr>
-            <td style="text-align: center;">
-                <div class="kop-instansi">DINAS PENDIDIKAN & KEBUDAYAAN — PROVINSI JAWA BARAT</div>
-                <div class="kop-sekolah">SMK PUSAT KEUNGGULAN NEGERI CONTOH</div>
-                <div class="kop-alamat">Jl. Pendidikan No. 45, Kompleks Laboratorium Komputer Terpadu | Telp: (021) 7890123 | Email: silab@smknegeri.sch.id</div>
+            @if($logoBase64)
+                <td style="width: 72px; text-align: center; vertical-align: middle;">
+                    <img src="{{ $logoBase64 }}" alt="Logo SiLab" style="width: 58px; height: 58px; object-fit: contain;" />
+                </td>
+            @endif
+            <td style="text-align: center; vertical-align: middle;">
+                <div class="kop-instansi">{{ config('silab.instansi') }}</div>
+                <div class="kop-sekolah">{{ config('silab.nama_sekolah') }}</div>
+                <div class="kop-alamat">{{ config('silab.alamat') }}</div>
             </td>
+            @if($logoBase64)
+                <td style="width: 72px;"></td>
+            @endif
         </tr>
     </table>
 
@@ -240,15 +253,15 @@
                 <div>Mengetahui,</div>
                 <div style="font-weight: bold;">Koordinator Tim Teknisi Laboratorium,</div>
                 <div style="height: 55px;"></div>
-                <div style="font-weight: bold; text-decoration: underline;">Faisal Rahman, S.Kom.</div>
-                <div style="font-size: 8pt; color: #475569;">NIP. 19850314 201101 1 004</div>
+                <div style="font-weight: bold; text-decoration: underline;">{{ config('silab.koordinator_teknisi_nama') }}</div>
+                <div style="font-size: 8pt; color: #475569;">{{ config('silab.koordinator_teknisi_nip') }}</div>
             </td>
             <td style="width: 50%; text-align: center;">
-                <div>Ditetapkan di: Jakarta, {{ now()->isoFormat('D MMMM Y') }}</div>
+                <div>Ditetapkan di: {{ config('silab.kota') }}, {{ now()->isoFormat('D MMMM Y') }}</div>
                 <div style="font-weight: bold;">Kepala Laboratorium & Sarpras,</div>
                 <div style="height: 55px;"></div>
-                <div style="font-weight: bold; text-decoration: underline;">Dr. Ir. H. Bambang Hartono, M.T.</div>
-                <div style="font-size: 8pt; color: #475569;">NIP. 19780512 200312 1 002</div>
+                <div style="font-weight: bold; text-decoration: underline;">{{ config('silab.kepala_lab_nama') }}</div>
+                <div style="font-size: 8pt; color: #475569;">{{ config('silab.kepala_lab_nip') }}</div>
             </td>
         </tr>
     </table>

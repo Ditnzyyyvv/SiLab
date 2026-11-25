@@ -150,7 +150,8 @@ class TiketPengaduanTest extends TestCase
             'nama_pelapor' => 'Tamu Lab',
         ]);
 
-        $response = $this->get('/lapor/sukses/' . $tiket->nomor_tiket);
+        $response = $this->withSession(['recent_guest_tikets' => [$tiket->nomor_tiket]])
+            ->get('/lapor/sukses/' . $tiket->nomor_tiket);
 
         $response->assertOk();
         $response->assertSee('Laporan Berhasil Terkirim!');
@@ -265,5 +266,93 @@ class TiketPengaduanTest extends TestCase
         $response->assertSee('Tiket Sudah Selesai');
         $response->assertSee('Tiket Pending');
         $response->assertSee('Laporan Kerusakan Terbaru Saya');
+    }
+
+    public function test_homepage_displays_public_complaint_form_with_labs_and_assets(): void
+    {
+        $response = $this->get('/');
+
+        $response->assertOk();
+        $response->assertSee('Formulir Pengaduan Kerusakan Aset');
+        $response->assertSee($this->lab->nama);
+        $response->assertSee($this->aset->kode_aset);
+        $response->assertSee($this->aset->nama);
+    }
+
+    public function test_guest_can_submit_report_from_homepage_without_login(): void
+    {
+        Storage::fake('public');
+
+        $payload = [
+            'lab_id' => $this->lab->id,
+            'aset_id' => $this->aset->id,
+            'nama_pelapor' => 'Raka Pratama - XI RPL 2',
+            'kontak_pelapor' => '081234567890',
+            'judul' => 'Proyektor redup tidak terbaca',
+            'deskripsi' => 'Lampu proyektor mulai redup dan berkedip kuning saat dipakai presentasi.',
+            'fotos' => [
+                UploadedFile::fake()->image('bukti_beranda.jpg'),
+            ],
+        ];
+
+        $response = $this->post('/lapor', $payload);
+
+        $tiket = Tiket::first();
+        $this->assertNotNull($tiket);
+
+        $response->assertRedirect('/lapor/sukses/' . $tiket->nomor_tiket);
+        $this->assertNull($tiket->pelapor_id);
+        $this->assertEquals($this->aset->id, $tiket->aset_id);
+        $this->assertEquals('Raka Pratama - XI RPL 2', $tiket->nama_pelapor);
+        $this->assertEquals('Pending', $tiket->status);
+        $this->assertCount(1, $tiket->fotos);
+        Storage::disk('public')->assertExists($tiket->fotos->first()->path);
+    }
+
+    public function test_homepage_report_rejects_missing_or_soft_deleted_asset(): void
+    {
+        // Tanpa aset_id
+        $responseMissing = $this->post('/lapor', [
+            'nama_pelapor' => 'Tamu Lab',
+            'judul' => 'Kerusakan perangkat',
+            'deskripsi' => 'Tidak menyala.',
+        ]);
+        $responseMissing->assertSessionHasErrors(['aset_id']);
+
+        // Aset yang sudah soft delete
+        $this->aset->delete();
+
+        $responseDeleted = $this->post('/lapor', [
+            'aset_id' => $this->aset->id,
+            'nama_pelapor' => 'Tamu Lab',
+            'judul' => 'Kerusakan perangkat lama',
+            'deskripsi' => 'Mencoba melaporkan aset terhapus.',
+        ]);
+        $responseDeleted->assertSessionHasErrors(['aset_id']);
+        $this->assertDatabaseCount('tikets', 0);
+    }
+
+    public function test_logged_in_member_submitting_homepage_form_links_ticket_to_account(): void
+    {
+        $payload = [
+            'aset_id' => $this->aset->id,
+            'nama_pelapor' => $this->member->nama,
+            'kontak_pelapor' => '089988776655',
+            'judul' => 'Keyboard beberapa tombol lepas',
+            'deskripsi' => 'Tombol Shift kiri dan Ctrl patah pengaitnya.',
+        ];
+
+        $response = $this->actingAs($this->member)->post('/lapor', $payload);
+
+        $tiket = Tiket::first();
+        $this->assertNotNull($tiket);
+        $this->assertEquals($this->member->id, $tiket->pelapor_id);
+
+        $response->assertRedirect('/lapor/sukses/' . $tiket->nomor_tiket);
+
+        $successPage = $this->actingAs($this->member)->get('/lapor/sukses/' . $tiket->nomor_tiket);
+        $successPage->assertOk();
+        $successPage->assertSee('Lihat Progres di Tiket Saya');
+        $successPage->assertSee('Terhubung ke Akun Anda');
     }
 }

@@ -1,0 +1,51 @@
+<?php
+
+return [
+    'accepted' => 'Kolom :attribute harus diterima.',
+    'array' => 'Kolom :attribute harus berupa daftar/array.',
+    'confirmed' => 'Konfirmasi :attribute tidak cocok.',
+    'current_password' => 'Kata sandi saat ini tidak sesuai.',
+    'date' => 'Kolom :attribute harus berupa tanggal yang valid.',
+    'email' => 'Kolom :attribute harus berupa alamat email yang valid.',
+    'exists' => ':attribute yang dipilih tidak valid.',
+    'image' => 'Kolom :attribute harus berupa berkas gambar.',
+    'in' => ':attribute yang dipilih tidak valid.',
+    'integer' => 'Kolom :attribute harus berupa bilangan bulat.',
+    'lowercase' => 'Kolom :attribute harus menggunakan huruf kecil.',
+    'max' => [
+        'array' => 'Kolom :attribute tidak boleh lebih dari :max item.',
+        'file' => 'Ukuran berkas :attribute tidak boleh melebihi :max kilobita.',
+        'numeric' => 'Nilai :attribute tidak boleh lebih dari :max.',
+        'string' => 'Panjang :attribute maksimal :max karakter.',
+    ],
+    'mimes' => 'Format :attribute harus berupa berkas bertipe: :values.',
+    'min' => [
+        'array' => 'Kolom :attribute minimal memiliki :min item.',
+        'file' => 'Ukuran berkas :attribute minimal :min kilobita.',
+        'numeric' => 'Nilai :attribute minimal :min.',
+        'string' => 'Panjang :attribute minimal :min karakter.',
+    ],
+    'nullable' => 'Kolom :attribute boleh dikosongkan.',
+    'password' => [
+        'letters' => ':attribute harus mengandung setidaknya satu huruf.',
+        'mixed' => ':attribute harus mengandung huruf besar dan huruf kecil.',
+        'numbers' => ':attribute harus mengandung setidaknya satu angka.',
+        'symbols' => ':attribute harus mengandung setidaknya satu simbol.',
+        'uncompromised' => ':attribute yang dipilih terdeteksi dalam kebocoran data. Gunakan kata sandi lain.',
+    ],
+    'required' => 'Kolom :attribute wajib diisi.',
+    'required_if' => 'Kolom :attribute wajib diisi saat :other bernilai :value.',
+    'string' => 'Kolom :attribute harus berupa teks.',
+    'unique' => ':attribute sudah terdaftar di sistem.',
+
+    'attributes' => [
+        'name' => 'Nama Lengkap',
+        'nama' => 'Nama Lengkap',
+        'email' => 'Alamat Email',
+        'password' => 'Kata Sandi',
+        'password_confirmation' => 'Konfirmasi Kata Sandi',
+        'current_password' => 'Kata Sandi Saat Ini',
+        'no_hp' => 'Nomor HP / WhatsApp',
+        'role' => 'Peran Pengguna',
+    ],
+];

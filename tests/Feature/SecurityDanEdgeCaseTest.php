@@ -245,4 +245,62 @@ class SecurityDanEdgeCaseTest extends TestCase
 
         $response->assertSessionHasErrors('fotos.0');
     }
+
+    /**
+     * Deletion Guard Kategori: Kategori yang masih terkait aset (termasuk soft-deleted) ditolak dengan rapi tanpa HTTP 500.
+     */
+    public function test_admin_cannot_delete_category_referenced_by_soft_deleted_asset(): void
+    {
+        $this->aset->delete(); // soft delete aset
+
+        $response = $this->actingAs($this->admin)->delete(route('admin.kategoris.destroy', $this->kategori));
+
+        $response->assertRedirect(route('admin.kategoris.index'))
+            ->assertSessionHas('error');
+        $this->assertDatabaseHas('kategoris', ['id' => $this->kategori->id]);
+    }
+
+    /**
+     * Guard Akun Admin Terakhir: Admin terakhir tidak dapat menghapus akunnya sendiri lewat halaman Profil.
+     */
+    public function test_last_admin_cannot_delete_own_account_from_profile(): void
+    {
+        $response = $this->actingAs($this->admin)->delete(route('profile.destroy'), [
+            'password' => 'password',
+        ]);
+
+        $response->assertRedirect(route('profile.edit'))
+            ->assertSessionHas('error');
+        $this->assertDatabaseHas('users', ['id' => $this->admin->id]);
+    }
+
+    /**
+     * Privasi Halaman Sukses: Orang lain yang menebak nomor tiket mendapat 403, sedangkan pengirim/pemilik/admin diizinkan.
+     */
+    public function test_lapor_success_page_blocks_unauthorized_enumeration_but_allows_submitter_and_admin(): void
+    {
+        $tiket = Tiket::factory()->create([
+            'nomor_tiket' => 'TKT-202611-9001',
+            'aset_id' => $this->aset->id,
+            'pelapor_id' => null,
+            'nama_pelapor' => 'Pelapor Rahasia',
+            'status' => 'Pending',
+        ]);
+
+        // Tamu acak tanpa session submitter -> 403 Forbidden
+        $this->get(route('lapor.success', $tiket->nomor_tiket))->assertForbidden();
+
+        // Member lain -> 403 Forbidden
+        $this->actingAs($this->memberB)->get(route('lapor.success', $tiket->nomor_tiket))->assertForbidden();
+
+        // Admin -> 200 OK
+        $this->actingAs($this->admin)->get(route('lapor.success', $tiket->nomor_tiket))->assertOk();
+
+        // Pengirim asli dalam session yang sama -> 200 OK
+        $this->withSession(['recent_guest_tikets' => [$tiket->nomor_tiket]])
+            ->get(route('lapor.success', $tiket->nomor_tiket))
+            ->assertOk()
+            ->assertSee('Pelapor Rahasia');
+    }
 }
+

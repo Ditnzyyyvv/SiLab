@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Laporan Terkirim: {{ $tiket->nomor_tiket }} — SiLab</title>
+    <link rel="icon" type="image/png" href="{{ asset('images/silab-logo.png') }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="font-sans antialiased text-slate-800 bg-slate-100 min-h-screen py-10 px-4 flex flex-col justify-center items-center">
@@ -56,23 +57,41 @@
         </div>
 
         <!-- Reminder Notice (PRD Alur 1) -->
-        <div class="p-4 rounded-xl bg-indigo-50 border border-indigo-100 text-xs text-indigo-950 text-left leading-relaxed">
-            <p class="font-bold mb-1">ℹ️ Informasi Pelapor Tamu</p>
-            <p>
-                Laporan ini telah masuk ke sistem antrean Admin Lab. Karena Anda melapor cepat tanpa login, riwayat tiket tidak tersimpan dalam akun dashboard. Silakan simpan / tangkap layar (screenshot) nomor tiket ini.
-            </p>
-        </div>
+        @if(Auth::check() && $tiket->pelapor_id === Auth::id())
+            <div class="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-950 text-left leading-relaxed">
+                <p class="font-bold mb-1">✓ Terhubung ke Akun Anda</p>
+                <p>
+                    Laporan ini otomatis tercatat di akun <strong>{{ Auth::user()->nama }}</strong>. Anda dapat memantau progres penanganan dan notifikasi langsung dari dashboard.
+                </p>
+            </div>
+        @else
+            <div class="p-4 rounded-xl bg-indigo-50 border border-indigo-100 text-xs text-indigo-950 text-left leading-relaxed">
+                <p class="font-bold mb-1">ℹ️ Informasi Pelapor Tamu</p>
+                <p>
+                    Laporan ini telah masuk ke sistem antrean Admin Lab. Karena Anda melapor cepat tanpa login, riwayat tiket tidak tersimpan dalam akun dashboard. Silakan simpan / tangkap layar (screenshot) nomor tiket ini.
+                </p>
+            </div>
+        @endif
 
         <!-- Action Links -->
         <div class="space-y-2 pt-2">
-            <a href="{{ url('/') }}" class="block w-full py-3 px-4 rounded-xl text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 transition-colors shadow-sm">
-                Kembali ke Beranda
-            </a>
-            @guest
-                <a href="{{ route('register') }}" class="block w-full py-2.5 px-4 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 transition-colors">
-                    Daftar Akun Member (Untuk Pantau Riwayat)
+            @if(Auth::check() && Auth::user()->role === 'member' && $tiket->pelapor_id === Auth::id())
+                <a href="{{ route('member.tikets.show', $tiket) }}" class="block w-full py-3 px-4 rounded-xl text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 transition-colors shadow-sm">
+                    Lihat Progres di Tiket Saya →
                 </a>
-            @endguest
+                <a href="{{ url('/') }}" class="block w-full py-2.5 px-4 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 transition-colors">
+                    Kembali ke Beranda
+                </a>
+            @else
+                <a href="{{ url('/') }}" class="block w-full py-3 px-4 rounded-xl text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 transition-colors shadow-sm">
+                    Kembali ke Beranda
+                </a>
+                @guest
+                    <a href="{{ route('register') }}" class="block w-full py-2.5 px-4 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 transition-colors">
+                        Daftar Akun Member (Untuk Pantau Riwayat)
+                    </a>
+                @endguest
+            @endif
         </div>
     </div>
 </body>

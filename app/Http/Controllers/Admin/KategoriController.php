@@ -70,9 +70,9 @@ class KategoriController extends Controller
      */
     public function destroy(Kategori $kategori): RedirectResponse
     {
-        if ($kategori->asets()->count() > 0) {
+        if ($kategori->asets()->withTrashed()->count() > 0) {
             return redirect()->route('admin.kategoris.index')
-                ->with('error', 'Kategori tidak dapat dihapus karena masih digunakan oleh aset.');
+                ->with('error', 'Kategori tidak dapat dihapus karena masih terkait dengan data aset (termasuk arsip aset terhapus).');
         }
 
         $kategori->delete();
