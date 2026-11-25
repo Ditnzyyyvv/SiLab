@@ -22,6 +22,7 @@ class GoogleAuthTest extends TestCase
         $abstractUser->shouldReceive('getAvatar')->andReturn($avatar);
 
         $provider = Mockery::mock(\Laravel\Socialite\Contracts\Provider::class);
+        $provider->shouldReceive('redirectUrl')->andReturnSelf();
         $provider->shouldReceive('user')->andReturn($abstractUser);
 
         Socialite::shouldReceive('driver')->with('google')->andReturn($provider);

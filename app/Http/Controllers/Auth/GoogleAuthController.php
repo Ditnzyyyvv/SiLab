@@ -17,14 +17,18 @@ class GoogleAuthController extends Controller
     /**
      * Arahkan pengguna ke halaman autentikasi Google OAuth 2.0.
      */
-    public function redirect(): RedirectResponse
+    public function redirect(Request $request): RedirectResponse
     {
         if (empty(config('services.google.client_id')) || empty(config('services.google.client_secret'))) {
             return redirect()->route('login')
                 ->with('error', 'Login dengan Google belum dikonfigurasi. Mohon isi GOOGLE_CLIENT_ID dan GOOGLE_CLIENT_SECRET pada berkas .env.');
         }
 
-        return Socialite::driver('google')->redirect();
+        $redirectUri = $request->getSchemeAndHttpHost() . '/auth/google/callback';
+
+        return Socialite::driver('google')
+            ->redirectUrl($redirectUri)
+            ->redirect();
     }
 
     /**
@@ -34,7 +38,10 @@ class GoogleAuthController extends Controller
     public function callback(Request $request): RedirectResponse
     {
         try {
-            $googleUser = Socialite::driver('google')->user();
+            $redirectUri = $request->getSchemeAndHttpHost() . '/auth/google/callback';
+            $googleUser = Socialite::driver('google')
+                ->redirectUrl($redirectUri)
+                ->user();
         } catch (\Throwable $e) {
             return redirect()->route('login')
                 ->with('error', 'Autentikasi Google dibatalkan atau gagal. Silakan coba kembali.');
