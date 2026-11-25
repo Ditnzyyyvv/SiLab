@@ -104,14 +104,6 @@
                         Promise.all(decodePromises),
                         new Promise((resolve) => setTimeout(resolve, 350)),
                     ]).then(startIntro);
-
-                    overlay.addEventListener('click', dismissIntro);
-                    document.addEventListener('keydown', function onKey(e) {
-                        if (e.key === 'Escape' || e.key === ' ' || e.key === 'Enter') {
-                            dismissIntro();
-                            document.removeEventListener('keydown', onKey);
-                        }
-                    });
                 })();
             </script>
         @endif

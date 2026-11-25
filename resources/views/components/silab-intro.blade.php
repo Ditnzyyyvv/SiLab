@@ -1,16 +1,15 @@
 {{-- Smooth Multi-Layer Logo Intro Overlay untuk Halaman Login & Register --}}
 <div
     id="silab-intro-overlay"
-    class="silab-intro-overlay fixed inset-0 z-50 flex flex-col items-center justify-center bg-gradient-to-br from-white via-slate-50 to-sky-50/95 transition-all duration-700 ease-out cursor-pointer select-none"
+    class="silab-intro-overlay fixed inset-0 z-50 flex flex-col items-center justify-center bg-gradient-to-br from-white via-slate-50 to-sky-50/95 transition-all duration-700 ease-out select-none"
     role="presentation"
-    title="Klik di mana saja untuk melewati intro"
 >
     <div id="silab-intro-stage" class="silab-intro-stage relative flex flex-col items-center">
         {{-- Ambient Blue Glow Behind Logo --}}
-        <div class="silab-layer-glow pointer-events-none absolute -inset-8 rounded-full bg-gradient-to-tr from-blue-600/20 via-sky-400/25 to-cyan-300/20 blur-3xl opacity-0"></div>
+        <div class="silab-layer-glow pointer-events-none absolute -inset-12 rounded-full bg-gradient-to-tr from-blue-600/20 via-sky-400/25 to-cyan-300/20 blur-3xl opacity-0"></div>
 
         {{-- 1024x1024 Synchronized Transparent Layer Stack --}}
-        <div class="relative w-52 h-52 sm:w-64 sm:h-64 overflow-hidden rounded-3xl">
+        <div class="relative w-72 h-72 sm:w-96 sm:h-96 md:w-[440px] md:h-[440px] overflow-hidden rounded-3xl">
             {{-- Layer 1: Blueprint Outline Wireframe --}}
             <img src="{{ asset('images/intro/outline.png') }}" alt="" decoding="async"
                  class="silab-layer-outline absolute inset-0 w-full h-full object-contain opacity-0 will-change-transform" />
@@ -52,13 +51,8 @@
         </div>
 
         {{-- Subtitle Tagline --}}
-        <p class="silab-layer-tagline mt-3 text-[11px] sm:text-xs font-bold uppercase text-slate-500 tracking-[0.14em] opacity-0">
+        <p class="silab-layer-tagline mt-2 text-xs sm:text-sm font-bold uppercase text-slate-500 tracking-[0.14em] opacity-0">
             Sistem Informasi Laboratorium Sekolah
         </p>
-
-        {{-- Subtle Skip Hint --}}
-        <span class="mt-6 text-[11px] font-medium text-slate-400 hover:text-indigo-600 transition-colors">
-            Klik di mana saja untuk lewati
-        </span>
     </div>
 </div>
