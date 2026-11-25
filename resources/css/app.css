@@ -1,3 +1,245 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* =========================================================
+ * SiLab Smooth Multi-Layer Logo Intro Animation (60fps GPU)
+ * ========================================================= */
+@keyframes silabGlowPulse {
+    0% {
+        opacity: 0;
+        transform: scale(0.72);
+    }
+    45% {
+        opacity: 0.7;
+        transform: scale(1.06);
+    }
+    100% {
+        opacity: 0.35;
+        transform: scale(1);
+    }
+}
+
+@keyframes silabOutlineTrace {
+    0% {
+        opacity: 0;
+        clip-path: inset(0 100% 0 0);
+        transform: scale(0.94);
+        filter: drop-shadow(0 0 12px rgba(14, 165, 233, 0.7));
+    }
+    20% {
+        opacity: 1;
+    }
+    70% {
+        opacity: 1;
+        clip-path: inset(0 0% 0 0);
+        transform: scale(1);
+        filter: drop-shadow(0 0 14px rgba(14, 165, 233, 0.55));
+    }
+    100% {
+        opacity: 0;
+        clip-path: inset(0 0% 0 0);
+        transform: scale(1.01);
+        filter: drop-shadow(0 0 0px rgba(14, 165, 233, 0));
+    }
+}
+
+@keyframes silabMonogramFill {
+    0% {
+        opacity: 0;
+        clip-path: inset(100% 0 0 0);
+        transform: scale(0.95) translateY(6px);
+    }
+    35% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 1;
+        clip-path: inset(0% 0 0 0);
+        transform: scale(1) translateY(0);
+    }
+}
+
+@keyframes silabPixelPop {
+    0% {
+        opacity: 0;
+        transform: translate(-14px, 14px) scale(0.35);
+    }
+    65% {
+        opacity: 1;
+        transform: translate(1px, -2px) scale(1.06);
+    }
+    100% {
+        opacity: 1;
+        transform: translate(0, 0) scale(1);
+    }
+}
+
+@keyframes silabWordmarkReveal {
+    0% {
+        opacity: 0;
+        clip-path: inset(0 0 100% 0);
+        transform: translateY(14px);
+    }
+    100% {
+        opacity: 1;
+        clip-path: inset(0 0 0% 0);
+        transform: translateY(0);
+    }
+}
+
+@keyframes silabLineTrace {
+    0% {
+        opacity: 0;
+        clip-path: inset(0 100% 0 0);
+    }
+    15% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 1;
+        clip-path: inset(0 0% 0 0);
+    }
+}
+
+@keyframes silabDotIgnite {
+    0% {
+        opacity: 0;
+        transform: scale(0.15);
+        filter: drop-shadow(0 0 0px rgba(37, 99, 235, 0));
+    }
+    60% {
+        opacity: 1;
+        transform: scale(1.18);
+        filter: drop-shadow(0 0 12px rgba(14, 165, 233, 0.85));
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+        filter: drop-shadow(0 0 0px rgba(37, 99, 235, 0));
+    }
+}
+
+@keyframes silabFullFinish {
+    0% {
+        opacity: 0;
+        filter: brightness(1.08);
+    }
+    100% {
+        opacity: 1;
+        filter: brightness(1);
+    }
+}
+
+@keyframes silabTaglineReveal {
+    0% {
+        opacity: 0;
+        transform: translateY(10px);
+        letter-spacing: 0.22em;
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+        letter-spacing: 0.14em;
+    }
+}
+
+@keyframes silabSheenSweep {
+    0% {
+        transform: translateX(-140%) skewX(-22deg);
+        opacity: 0;
+    }
+    25% {
+        opacity: 0.7;
+    }
+    100% {
+        transform: translateX(220%) skewX(-22deg);
+        opacity: 0;
+    }
+}
+
+@keyframes silabCardEnter {
+    0% {
+        opacity: 0;
+        transform: translateY(20px) scale(0.98);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.silab-intro-stage.is-playing .silab-layer-glow {
+    animation: silabGlowPulse 1.6s cubic-bezier(0.22, 1, 0.36, 1) 0.05s both;
+}
+
+.silab-intro-stage.is-playing .silab-layer-outline {
+    animation: silabOutlineTrace 1.15s cubic-bezier(0.22, 1, 0.36, 1) 0.05s both;
+}
+
+.silab-intro-stage.is-playing .silab-layer-monogram {
+    animation: silabMonogramFill 0.75s cubic-bezier(0.22, 1, 0.36, 1) 0.45s both;
+}
+
+.silab-intro-stage.is-playing .silab-layer-pixel-2 {
+    animation: silabPixelPop 0.52s cubic-bezier(0.34, 1.56, 0.64, 1) 0.74s both;
+}
+.silab-intro-stage.is-playing .silab-layer-pixel-1 {
+    animation: silabPixelPop 0.52s cubic-bezier(0.34, 1.56, 0.64, 1) 0.82s both;
+}
+.silab-intro-stage.is-playing .silab-layer-pixel-3 {
+    animation: silabPixelPop 0.52s cubic-bezier(0.34, 1.56, 0.64, 1) 0.90s both;
+}
+.silab-intro-stage.is-playing .silab-layer-pixel-4 {
+    animation: silabPixelPop 0.52s cubic-bezier(0.34, 1.56, 0.64, 1) 0.98s both;
+}
+.silab-intro-stage.is-playing .silab-layer-pixel-5 {
+    animation: silabPixelPop 0.52s cubic-bezier(0.34, 1.56, 0.64, 1) 1.05s both;
+}
+
+.silab-intro-stage.is-playing .silab-layer-wordmark {
+    animation: silabWordmarkReveal 0.62s cubic-bezier(0.22, 1, 0.36, 1) 0.92s both;
+}
+
+.silab-intro-stage.is-playing .silab-layer-line {
+    animation: silabLineTrace 0.52s cubic-bezier(0.22, 1, 0.36, 1) 1.24s both;
+}
+
+.silab-intro-stage.is-playing .silab-layer-dot {
+    animation: silabDotIgnite 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) 1.54s both;
+}
+
+.silab-intro-stage.is-playing .silab-layer-full {
+    animation: silabFullFinish 0.42s ease-out 1.66s both;
+}
+
+.silab-intro-stage.is-playing .silab-layer-sheen {
+    animation: silabSheenSweep 0.85s cubic-bezier(0.22, 1, 0.36, 1) 1.55s both;
+}
+
+.silab-intro-stage.is-playing .silab-layer-tagline {
+    animation: silabTaglineReveal 0.65s cubic-bezier(0.22, 1, 0.36, 1) 1.32s both;
+}
+
+.silab-auth-shell {
+    opacity: 0;
+    transform: translateY(20px) scale(0.98);
+    transition: opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1),
+                transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.silab-auth-shell.is-visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .silab-intro-overlay {
+        display: none !important;
+    }
+    .silab-auth-shell {
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
+    }
+}
