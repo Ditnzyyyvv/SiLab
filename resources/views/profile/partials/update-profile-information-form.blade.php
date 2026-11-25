@@ -48,6 +48,12 @@
         </div>
 
         <div>
+            <x-input-label for="kelas_jabatan" value="Kelas / Jabatan (Opsional)" />
+            <x-text-input id="kelas_jabatan" name="kelas_jabatan" type="text" class="mt-1 block w-full text-sm" :value="old('kelas_jabatan', $user->kelas_jabatan)" placeholder="Contoh: XI RPL 2 / Guru Produktif" />
+            <x-input-error class="mt-1.5" :messages="$errors->get('kelas_jabatan')" />
+        </div>
+
+        <div>
             <x-input-label for="no_hp" value="Nomor HP / WhatsApp (Opsional)" />
             <x-text-input id="no_hp" name="no_hp" type="text" class="mt-1 block w-full text-sm" :value="old('no_hp', $user->no_hp)" placeholder="Contoh: 081234567890" />
             <x-input-error class="mt-1.5" :messages="$errors->get('no_hp')" />

@@ -114,11 +114,19 @@
                                         <div>
                                             <div class="font-semibold text-slate-900">
                                                 {{ $item->nama }}
+                                                @if($item->kelas_jabatan)
+                                                    <span class="ml-1 px-1.5 py-0.5 text-[10px] rounded bg-slate-100 text-slate-600 font-medium">{{ $item->kelas_jabatan }}</span>
+                                                @endif
                                                 @if($item->id === Auth::id())
                                                     <span class="ml-1 px-1.5 py-0.5 text-[10px] rounded bg-indigo-50 text-indigo-700 border border-indigo-200 font-bold">Anda</span>
                                                 @endif
                                             </div>
-                                            <div class="text-[11px] text-slate-500">{{ $item->email }}</div>
+                                            <div class="text-[11px] text-slate-500 flex items-center gap-1.5">
+                                                <span>{{ $item->email }}</span>
+                                                @if($item->google_id)
+                                                    <span class="px-1.5 py-0.2 rounded bg-blue-50 text-blue-700 text-[9px] font-bold border border-blue-200">Google</span>
+                                                @endif
+                                            </div>
                                         </div>
                                     </div>
                                 </td>

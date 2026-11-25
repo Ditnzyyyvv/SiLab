@@ -25,11 +25,11 @@ Route::middleware(['throttle:30,1'])->group(function () {
 });
 
 Route::get('/dashboard', [DashboardController::class, 'index'])
-    ->middleware(['auth'])
+    ->middleware(['auth', 'identity.completed'])
     ->name('dashboard');
 
 // Admin Routes
-Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth', 'identity.completed', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'admin'])->name('dashboard');
 
     // Master Data Lab
@@ -66,7 +66,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 });
 
 // Teknisi Routes
-Route::middleware(['auth', 'role:teknisi'])->prefix('teknisi')->name('teknisi.')->group(function () {
+Route::middleware(['auth', 'identity.completed', 'role:teknisi'])->prefix('teknisi')->name('teknisi.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'teknisi'])->name('dashboard');
 
     // Tugas Perbaikan Teknisi (FR-20, FR-21, FR-22, FR-23, FR-24)
@@ -76,7 +76,7 @@ Route::middleware(['auth', 'role:teknisi'])->prefix('teknisi')->name('teknisi.')
 });
 
 // Member Routes
-Route::middleware(['auth', 'role:member'])->prefix('member')->name('member.')->group(function () {
+Route::middleware(['auth', 'identity.completed', 'role:member'])->prefix('member')->name('member.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'member'])->name('dashboard');
 
     // Pengaduan Kerusakan & Tiket Saya (FR-13, FR-15, FR-19)
@@ -85,7 +85,7 @@ Route::middleware(['auth', 'role:member'])->prefix('member')->name('member.')->g
     Route::post('tikets/{tiket}/reopen', [MemberTiketController::class, 'reopen'])->name('tikets.reopen');
 });
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'identity.completed'])->group(function () {
     // Notifikasi Dalam Aplikasi (FR-28)
     Route::get('/notifikasi', [NotifikasiController::class, 'index'])->name('notifikasi.index');
     Route::get('/notifikasi/{id}/read', [NotifikasiController::class, 'read'])->name('notifikasi.read');

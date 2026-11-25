@@ -3,7 +3,7 @@
 [![Laravel 13](https://img.shields.io/badge/Laravel-13.x-FF2D20?style=flat&logo=laravel&logoColor=white)](https://laravel.com)
 [![PHP 8.3+](https://img.shields.io/badge/PHP-8.3%2B-777BB4?style=flat&logo=php&logoColor=white)](https://php.net)
 [![Tailwind CSS 3.4](https://img.shields.io/badge/Tailwind_CSS-3.4-06B6D4?style=flat&logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
-[![Tests Passing](https://img.shields.io/badge/PHPUnit%20Tests-101%2F101%20PASS-10B981?style=flat)](file:///c:/Users/Lenovo/Documents/.ukk/tests)
+[![Tests Passing](https://img.shields.io/badge/PHPUnit%20Tests-106%2F106%20PASS-10B981?style=flat)](file:///c:/Users/Lenovo/Documents/.ukk/tests)
 
 **SiLab** adalah platform web modern untuk manajemen inventaris laboratorium sekolah, penanganan tiket pengaduan kerusakan, pelacakan proses perbaikan teknisi, serta penyusunan laporan audit sarana prasarana resmi.
 
@@ -52,6 +52,7 @@ Dikembangkan dengan penyesuaian khusus **Alur 1 PRD**: Siswa, guru, atau penggun
 - **Database Engine:** MySQL 8.0+ / MariaDB 10.4+ (SQLite `:memory:` untuk test suite otomatis)
 - **Frontend / UI:** Blade Templates, Tailwind CSS 3.4, Alpine.js 3, Chart.js 4, Vite 8
 - **Paket Tambahan:**
+  - `laravel/socialite`: Autentikasi Google OAuth 2.0 + alur wajib lengkapi identitas asli pasca-login.
   - `simplesoftwareio/simple-qrcode`: Generasi SVG QR Code per aset.
   - `barryvdh/laravel-dompdf`: Cetak dokumen PDF resmi.
 - **Node.js & NPM:** Node.js v18+ dan NPM v9+
@@ -106,6 +107,11 @@ SILAB_KEPALA_LAB_NAMA="Dr. Ir. H. Bambang Hartono, M.T."
 SILAB_KEPALA_LAB_NIP="NIP. 19780512 200312 1 002"
 SILAB_KOORDINATOR_TEKNISI_NAMA="Faisal Rahman, S.Kom."
 SILAB_KOORDINATOR_TEKNISI_NIP="NIP. 19850314 201101 1 004"
+
+# Google OAuth 2.0 (Dapatkan dari Google Cloud Console -> Credentials -> OAuth Client ID)
+GOOGLE_CLIENT_ID=your-google-client-id.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=your-google-client-secret
+GOOGLE_REDIRECT_URI="${APP_URL}/auth/google/callback"
 ```
 
 ### 3. Tautan Penyimpanan Berkas & Database Seeding
@@ -175,6 +181,7 @@ php artisan test
 - `tests/Feature/TiketPengerjaanTest.php`: Validasi admin, disposisi, transisi status teknisi, sparepart, reopen, dan konfirmasi.
 - `tests/Feature/DashboardDanNotifikasiTest.php`: Metrik Chart.js 3 role dan pengiriman notifikasi dalam aplikasi.
 - `tests/Feature/LaporanEksporTest.php`: Pratinjau filter data, ekspor berkas PDF resmi ber-KOP & logo, dan streaming file CSV/Excel UTF-8 BOM.
+- `tests/Feature/GoogleAuthTest.php`: Google OAuth 2.0 callback, middleware wajib lengkapi identitas asli, dan redirect dashboard.
 - `tests/Feature/SecurityDanEdgeCaseTest.php`: Proteksi IDOR, concurrency multi-tiket, lock konfirmasi, deletion guard aset & kategori, proteksi Admin terakhir di profil, privasi halaman sukses, dan validasi upload berkas.
 
 ---

@@ -1,62 +1,152 @@
 <x-guest-layout>
-    <div class="mb-5">
-        <h1 class="text-lg font-bold text-slate-900">Daftar Akun Member</h1>
-        <p class="text-xs text-slate-500 mt-0.5">Opsional — dengan mendaftar, Anda dapat memantau riwayat laporan dan notifikasi perbaikan secara real-time.</p>
+    <div class="mb-6">
+        <h1 class="text-2xl sm:text-[26px] font-bold text-slate-900 tracking-tight">Mulai Bersama SiLab</h1>
+        <p class="text-sm text-slate-500 mt-1">Buat akun Member (opsional) untuk memantau riwayat tiket & notifikasi</p>
     </div>
 
-    <form method="POST" action="{{ route('register') }}" class="space-y-4">
+    @if(session('error'))
+        <div class="mb-4 p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-800 leading-relaxed">
+            {{ session('error') }}
+        </div>
+    @endif
+
+    <!-- Google OAuth Register/Login Button -->
+    <a
+        href="{{ route('auth.google.redirect') }}"
+        class="w-full inline-flex items-center justify-center gap-3 py-2.5 px-4 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 hover:border-slate-300 text-sm font-semibold text-slate-700 shadow-xs transition-all"
+    >
+        <svg class="w-5 h-5 shrink-0" viewBox="0 0 24 24">
+            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+        </svg>
+        <span>Daftar / Masuk dengan Google</span>
+    </a>
+
+    <!-- Divider -->
+    <div class="relative my-5">
+        <div class="absolute inset-0 flex items-center">
+            <div class="w-full border-t border-slate-200"></div>
+        </div>
+        <div class="relative flex justify-center text-xs">
+            <span class="bg-white px-3 text-slate-400 font-medium">atau</span>
+        </div>
+    </div>
+
+    <form method="POST" action="{{ route('register') }}" class="space-y-4" x-data="{ showPassword: false, showConfirm: false }">
         @csrf
 
         <!-- Name -->
         <div>
-            <x-input-label for="name" value="Nama Lengkap" />
-            <x-text-input id="name" class="block mt-1 w-full text-sm" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" placeholder="Contoh: Raka Pratama" />
+            <label for="name" class="block text-xs font-semibold text-slate-700 mb-1.5">Nama Lengkap</label>
+            <input
+                id="name"
+                type="text"
+                name="name"
+                value="{{ old('name') }}"
+                required
+                autofocus
+                autocomplete="name"
+                placeholder="Contoh: Raka Pratama"
+                class="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:border-[#3B49DF] focus:ring-2 focus:ring-[#3B49DF]/20 transition-all @error('name') border-rose-400 @enderror"
+            />
             <x-input-error :messages="$errors->get('name')" class="mt-1.5" />
         </div>
 
         <!-- Email Address -->
         <div>
-            <x-input-label for="email" value="Alamat Email" />
-            <x-text-input id="email" class="block mt-1 w-full text-sm" type="email" name="email" :value="old('email')" required autocomplete="username" placeholder="nama@sekolah.sch.id" />
+            <label for="email" class="block text-xs font-semibold text-slate-700 mb-1.5">Alamat Email</label>
+            <input
+                id="email"
+                type="email"
+                name="email"
+                value="{{ old('email') }}"
+                required
+                autocomplete="username"
+                placeholder="nama@sekolah.sch.id"
+                class="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:border-[#3B49DF] focus:ring-2 focus:ring-[#3B49DF]/20 transition-all @error('email') border-rose-400 @enderror"
+            />
             <x-input-error :messages="$errors->get('email')" class="mt-1.5" />
         </div>
 
         <!-- Password -->
         <div>
-            <x-input-label for="password" value="Kata Sandi" />
-
-            <x-text-input id="password" class="block mt-1 w-full text-sm"
-                            type="password"
-                            name="password"
-                            required autocomplete="new-password"
-                            placeholder="Minimal 8 karakter" />
-
+            <label for="password" class="block text-xs font-semibold text-slate-700 mb-1.5">Kata Sandi</label>
+            <div class="relative">
+                <input
+                    id="password"
+                    :type="showPassword ? 'text' : 'password'"
+                    name="password"
+                    required
+                    autocomplete="new-password"
+                    placeholder="Minimal 8 karakter"
+                    class="w-full rounded-xl border border-slate-200 bg-white pl-3.5 pr-10 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:border-[#3B49DF] focus:ring-2 focus:ring-[#3B49DF]/20 transition-all @error('password') border-rose-400 @enderror"
+                />
+                <button
+                    type="button"
+                    @click="showPassword = !showPassword"
+                    class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 focus:outline-none"
+                    aria-label="Tampilkan atau sembunyikan kata sandi"
+                >
+                    <svg x-show="!showPassword" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                    <svg x-show="showPassword" style="display: none;" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                    </svg>
+                </button>
+            </div>
             <x-input-error :messages="$errors->get('password')" class="mt-1.5" />
         </div>
 
         <!-- Confirm Password -->
         <div>
-            <x-input-label for="password_confirmation" value="Konfirmasi Kata Sandi" />
-
-            <x-text-input id="password_confirmation" class="block mt-1 w-full text-sm"
-                            type="password"
-                            name="password_confirmation" required autocomplete="new-password"
-                            placeholder="Ulangi kata sandi" />
-
+            <label for="password_confirmation" class="block text-xs font-semibold text-slate-700 mb-1.5">Konfirmasi Kata Sandi</label>
+            <div class="relative">
+                <input
+                    id="password_confirmation"
+                    :type="showConfirm ? 'text' : 'password'"
+                    name="password_confirmation"
+                    required
+                    autocomplete="new-password"
+                    placeholder="Ulangi kata sandi"
+                    class="w-full rounded-xl border border-slate-200 bg-white pl-3.5 pr-10 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:border-[#3B49DF] focus:ring-2 focus:ring-[#3B49DF]/20 transition-all"
+                />
+                <button
+                    type="button"
+                    @click="showConfirm = !showConfirm"
+                    class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 focus:outline-none"
+                    aria-label="Tampilkan atau sembunyikan konfirmasi kata sandi"
+                >
+                    <svg x-show="!showConfirm" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                    <svg x-show="showConfirm" style="display: none;" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                    </svg>
+                </button>
+            </div>
             <x-input-error :messages="$errors->get('password_confirmation')" class="mt-1.5" />
         </div>
 
-        <div class="pt-2 space-y-3">
-            <button type="submit" class="w-full py-2.5 px-4 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-xl shadow-sm transition-colors">
+        <!-- Submit Button -->
+        <div class="pt-1">
+            <button
+                type="submit"
+                class="w-full py-2.5 px-4 bg-[#3B49DF] hover:bg-[#2F3CC7] text-white text-sm font-semibold rounded-xl shadow-md shadow-blue-600/20 transition-all"
+            >
                 Daftar Sekarang
             </button>
-
-            <p class="text-center text-xs text-slate-500">
-                Sudah memiliki akun?
-                <a class="font-semibold text-indigo-600 hover:text-indigo-800" href="{{ route('login') }}">
-                    Masuk di sini
-                </a>
-            </p>
         </div>
+
+        <p class="text-center text-xs text-slate-500 pt-2">
+            Sudah memiliki akun?
+            <a class="font-semibold text-[#3B49DF] hover:text-[#2F3CC7]" href="{{ route('login') }}">
+                Masuk di sini
+            </a>
+        </p>
     </form>
 </x-guest-layout>
