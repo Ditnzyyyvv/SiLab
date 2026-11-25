@@ -108,29 +108,23 @@
                         </div>
                     </div>
 
-                    <!-- QR Scan Simulation Link -->
-                    <div class="bg-indigo-50/70 border border-indigo-200/80 rounded-2xl p-4 flex items-center justify-between gap-3">
-                        <div class="text-xs text-indigo-950">
+                    <!-- QR Scan Info / Simulation Link -->
+                    @if($asets->isNotEmpty())
+                        <div class="bg-indigo-50/70 border border-indigo-200/80 rounded-2xl p-4 flex items-center justify-between gap-3">
+                            <div class="text-xs text-indigo-950">
+                                <p class="font-bold">Punya Stiker QR di Meja Lab?</p>
+                                <p class="text-indigo-800/90 mt-0.5">Scan lewat kamera HP atau coba simulasi langsung:</p>
+                            </div>
+                            <a href="{{ route('lapor.create', $sampleQrKode) }}" class="shrink-0 inline-flex items-center px-3 py-2 text-xs font-semibold text-indigo-700 bg-white hover:bg-indigo-50 border border-indigo-200 rounded-lg shadow-sm transition-colors">
+                                Simulasi QR →
+                            </a>
+                        </div>
+                    @else
+                        <div class="bg-indigo-50/70 border border-indigo-200/80 rounded-2xl p-4 text-xs text-indigo-950">
                             <p class="font-bold">Punya Stiker QR di Meja Lab?</p>
-                            <p class="text-indigo-800/90 mt-0.5">Scan lewat kamera HP atau coba simulasi langsung:</p>
+                            <p class="text-indigo-800/90 mt-0.5">Pindai stiker QR Code pada aset fisik dengan kamera HP untuk langsung menuju formulir pelaporan kerusakan.</p>
                         </div>
-                        <a href="{{ route('lapor.create', $sampleQrKode) }}" class="shrink-0 inline-flex items-center px-3 py-2 text-xs font-semibold text-indigo-700 bg-white hover:bg-indigo-50 border border-indigo-200 rounded-lg shadow-sm transition-colors">
-                            Simulasi QR →
-                        </a>
-                    </div>
-
-                    <!-- Demo Credentials Banner -->
-                    <div class="p-4 rounded-2xl bg-slate-900 text-white space-y-2.5">
-                        <div class="flex items-center justify-between">
-                            <span class="text-[11px] font-bold text-indigo-400 uppercase tracking-wider">Akun Demo (Opsional Login)</span>
-                            <span class="text-[11px] text-slate-300">Password: <code class="px-1.5 py-0.5 rounded bg-slate-800 text-amber-300 font-mono font-bold">password</code></span>
-                        </div>
-                        <div class="flex flex-wrap gap-1.5 text-[11px] font-mono">
-                            <span class="px-2.5 py-1 rounded-md bg-slate-800 border border-slate-700 text-indigo-300">admin@silab.sch.id</span>
-                            <span class="px-2.5 py-1 rounded-md bg-slate-800 border border-slate-700 text-amber-300">teknisi@silab.sch.id</span>
-                            <span class="px-2.5 py-1 rounded-md bg-slate-800 border border-slate-700 text-emerald-300">member@silab.sch.id</span>
-                        </div>
-                    </div>
+                    @endif
                 </div>
 
                 <!-- Right Column: Direct Asset Complaint Form -->
